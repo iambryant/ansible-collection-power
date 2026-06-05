@@ -21,10 +21,9 @@
         dest: "{{ lpar_install_kickstart_files}}/{{ item.hostname }}.ks"
         mode: '0644'
 
-    - name: "Ensure client dhcp block is inserted into the subnet group"
+    - name: "Ensure client dhcp block is appended to the end of the file"
       ansible.builtin.blockinfile:
         dest: /etc/dhcp/dhcpd.conf
-        insertafter: 'filename "/boot/grub/powerpc-ieee1275/core.elf";'
         marker: "        #{mark} Ansible managed client config for {{ item.hostname }}"
         block: "{{ lookup('template', 'dhcpd_conf_client.j2') }}"
         state: present
