@@ -1,0 +1,6 @@
+        host {{ item.hostname }} {
+            hardware ethernet {{ lpar_install_mac_address_colon }};
+            fixed-address {{ item.ip_address }};
+            option host-name {{ item.hostname }};
+            option tftp-server-name "{{ lpar_install_netboot_ip }}";
+        }

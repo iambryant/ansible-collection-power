@@ -1,0 +1,30 @@
+---
+- name: "Ensure seed files are generated"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  block:
+    - name: "Ensure openstack structure is present"
+      ansible.builtin.file:
+        path: "{{ lpar_install_staging_dir }}/{{ item.hostname }}/{{ inner_item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - openstack
+        - openstack/latest
+      loop_control:
+        loop_var: inner_item
+
+    - name: "Ensure UUID is generated"
+      ansible.builtin.command: uuidgen
+      register: system_uuid
+      changed_when: false
+
+    - name: "Ensure client meta-data file is present"
+      ansible.builtin.template:
+        src: "{{ item.os_type }}/meta_data.json.j2"
+        dest: "{{ lpar_install_staging_dir }}/{{ item.hostname }}/openstack/latest/meta_data.json"
+
+    - name: "Ensure client user-config file is present"
+      ansible.builtin.template:
+        src: "{{ item.os_type }}/user_data.j2"
+        dest: "{{ lpar_install_staging_dir }}/{{ item.hostname }}/openstack/latest/user_data"

@@ -1,0 +1,65 @@
+---
+- name: "Ensure necessary packages are present on netboot server"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  ansible.builtin.package:
+    name:
+      - dhcp-server
+      - httpd
+      - tftp-server
+      - wget
+    state: present
+
+- name: "Ensure necessary services are started and enabled on netboot server"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ inner_item }}"
+    state: started
+    enabled: true
+  loop:
+    - httpd
+    - tftp.socket
+  loop_control:
+    loop_var: inner_item
+
+- name: Ensure target parent directories exist
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ lpar_install_web_root }}/{{ lpar_install_os_version }}"
+    state: directory
+    mode: '0755'
+
+- name: "Ensure boot/ directory is downloaded to TFTP root"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      wget --mirror --no-parent --no-host-directories --cut-dirs=7
+      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_install_tftp_root }}/
+      {{ lpar_install_mirror_url }}/boot/
+  args:
+    creates: "{{ lpar_install_tftp_root }}/boot/grub/powerpc-ieee1275"
+
+- name: "Ensure ppc/ directory is downloaded to TFTP root"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      wget --mirror --no-parent --no-host-directories --cut-dirs=7
+      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_install_tftp_root }}/
+      {{ lpar_install_mirror_url }}/ppc/
+  args:
+    creates: "{{ lpar_install_tftp_root }}/ppc/ppc64"
+
+- name: "Ensure images/ directory is downloaded to web root"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      wget --mirror --no-parent --no-host-directories --cut-dirs=7
+      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_install_web_root }}/{{ lpar_install_os_version }}/
+      {{ lpar_install_mirror_url }}/images/
+  args:
+    creates: "{{ lpar_install_web_root }}/{{ lpar_install_os_version }}/images/install.img"

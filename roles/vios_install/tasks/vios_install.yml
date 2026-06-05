@@ -1,0 +1,72 @@
+---
+- name: "Check if VIOS partition already exists on HMC"
+  connection: local
+  ibm.power_hmc.vios:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth:
+      username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+      password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+    system_name: "{{ item.system_name }}"
+    name: "{{ item.name }}"
+    state: "facts"
+  register: vios_check
+
+- name: "Create and configure VIOS"
+  connection: local
+  block:
+    - name: "Create VIOS with default configuration"
+      ibm.power_hmc.vios:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+          username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+          password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+        system_name: "{{ item.system_name }}"
+        name: "{{ item.name }}"
+        settings: "{{ item.profile_settings }}"
+        state: "present"
+
+    - name: "Install VIOS using the image available on the HMC local disk"
+      ibm.power_hmc.vios:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+          username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+          password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+        system_name: "{{ item.system_name }}"
+        name: "{{ item.name }}"
+        image_dir: "{{ vios_install_image_dir }}"
+        vios_iso: "{{ vios_install_vios_iso }}"
+        vios_IP: "{{ item.install_settings.vios_ip }}"
+        vios_gateway: "{{ item.install_settings.vios_gateway }}"
+        vios_subnetmask: "{{ item.install_settings.vios_subnetmask }}"
+        network_macaddr: "{{ item.install_settings.network_macaddr }}"
+        prof_name: "{{ item.install_settings.prof_name }}"
+        timeout: "{{ item.install_settings.timeout }}"
+        action: install
+
+    - name: "Accept VIOS License"
+      ibm.power_hmc.vios:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+          username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+          password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+        system_name: "{{ item.system_name }}"
+        name: "{{ item.name }}"
+        action: accept_license
+
+    - name: "Enable VIOS Firewall and Allow NTP Traffic"
+      ibm.power_hmc.vios_secure:
+        hmc_host: "{{ inventory_hostname }}"
+        hmc_auth:
+          username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+          password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+        system_name: "{{ item.system_name }}"
+        vios_name: "{{ item.name }}"
+        state: setting_firewall
+        active: true
+        reload: true
+        ip_version: "ipv4"
+        firewall_config:
+          - port: 123
+            present: allow
+  when: vios_check.vios_info is not defined
+  # Change this to take custom ports

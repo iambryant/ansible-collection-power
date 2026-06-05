@@ -1,0 +1,33 @@
+namespace: lpars
+
+name: power
+
+version: 1.0.0
+
+readme: README.md
+
+authors:
+  - lpars
+
+description: This collection includes roles for automating common tasks on IBM Power.
+
+license:
+  - MIT
+
+license_file: 'LICENSE'
+
+tags:
+  - power
+
+dependencies:
+  community.general: ">=8.0.0"
+
+repository: https://github.com/LPARS/ansible-collection-power
+
+documentation: https://github.com/LPARS/ansible-collection-power
+
+homepage: http://example.com
+
+issues: https://github.com/LPARS/ansible-collection-power/issues
+
+build_ignore: []

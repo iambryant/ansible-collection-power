@@ -1,0 +1,14 @@
+text
+
+%pre --interpreter=/usr/bin/bash
+curl -s http://{{ lpar_install_netboot_ip }}/cloud-images/debian-13-generic-ppc64el.raw | dd of=/dev/sda bs=4M conv=fsync
+partprobe /dev/sda
+mount /dev/sda1 /mnt
+cat << 'EOF' > /mnt/etc/cloud/cloud.cfg.d/99_network_datasource.cfg
+datasource:
+  NoCloud:
+    seedfrom: http://{{ lpar_install_netboot_ip }}/seed-files/{{ item.hostname }}/
+EOF
+umount /mnt
+reboot
+%end

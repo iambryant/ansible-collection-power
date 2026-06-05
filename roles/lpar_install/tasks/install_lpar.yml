@@ -1,0 +1,40 @@
+---
+- name: "Include installation tasks for {{ item.os_type }}"
+  ansible.builtin.include_tasks: "{{ item.os_type }}_tasks.yml"
+
+- name: "Install logical partition {{ item.vm_name }} over the network"
+  connection: local
+  ibm.power_hmc.powervm_lpar_instance:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth:
+      username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+      password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+    system_name: "{{ item.system_name }}"
+    vm_name: "{{ item.vm_name }}"
+    install_settings:
+      vm_ip: "{{ item.ip_address }}"
+      nim_ip: "{{ lpar_install_netboot_ip }}"
+      nim_gateway: "{{ lpar_install_gateway }}"
+      nim_subnetmask: "{{ lpar_install_netmask }}"
+      vm_mac: "{{ lpar_install_mac_address }}"
+      timeout: "{{ item.timeout | default(11) }}"
+    action: install_os
+  delegate_to: "{{ groups['hmc'][0] }}"
+
+- name: "Ensure logical partition host keys are added to known_hosts"
+  ansible.builtin.known_hosts:
+    name: "{{ item.hostname }}.{{ item.domain }}"
+    key: "{{ lookup('ansible.builtin.pipe', 'ssh-keyscan -t ed25519 ' + item.hostname + '.' + item.domain + ' | grep ssh-ed25519') }}"
+    state: present
+  delegate_to: "localhost"
+
+- name: "Ensure system facts are gathered from logical partition {{ item.vm_name }}"
+  ansible.builtin.setup:
+  delegate_to: "{{ item.hostname }}.{{ item.domain }}"
+  delegate_facts: true
+
+- name: "Print OS info from logical partition {{ item.vm_name }}"
+  ansible.builtin.debug:
+    msg: >
+      Distribution: {{ hostvars[item.hostname + '.' + item.domain]['ansible_facts']['distribution'] }},
+      Version: {{ hostvars[item.hostname + '.' + item.domain]['ansible_facts']['distribution_version'] }}

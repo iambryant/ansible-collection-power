@@ -1,0 +1,57 @@
+---
+- name: "Configure netboot infrastructure for logical partition {{ item.vm_name }}"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  block:
+    - name: "Ensure seed and kickstart file directories are present"
+      ansible.builtin.file:
+        path: "{{ inner_item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ lpar_install_seed_files }}"
+        - "{{ lpar_install_kickstart_files }}"
+        - "{{ lpar_install_seed_files }}/{{ item.hostname }}"
+        - "{{ lpar_install_tftp_root }}/boot/grub/grub.cfg.d"
+      loop_control:
+        loop_var: inner_item
+
+    - name: "Ensure base grub configuration is present"
+      ansible.builtin.template:
+        src: grub_conf_base.j2
+        dest: "{{ lpar_install_tftp_root }}/boot/grub/grub.cfg"
+        mode: '0644'
+
+    - name: "Ensure base dhcp configuration is present"
+      ansible.builtin.template:
+        src: dhcpd_conf_base.j2
+        dest: "/etc/dhcp/dhcpd.conf"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: "Ensure client grub configuration is present"
+      ansible.builtin.template:
+        src: grub_conf_client.j2
+        dest: "{{ lpar_install_tftp_root }}/boot/grub/grub.cfg.d/grub.cfg-01-{{ lpar_install_mac_address_hyphen }}"
+        mode: '0644'
+
+    - name: "Ensure client kickstart configuration is present"
+      ansible.builtin.template:
+        src: "{{ item.os_type }}/ks.j2"
+        dest: "{{ lpar_install_kickstart_files}}/{{ item.hostname }}.ks"
+        mode: '0644'
+
+    - name: "Ensure client dhcp block is inserted into the subnet group"
+      ansible.builtin.blockinfile:
+        dest: /etc/dhcp/dhcpd.conf
+        insertafter: 'filename "/boot/grub/powerpc-ieee1275/core.elf";'
+        marker: "        #{mark} Ansible entry for {{ item.hostname }}"
+        block: "{{ lookup('template', 'dhcpd_conf_client.j2') }}"
+        state: present
+
+    - name: "Ensure dhcpd is restarted"
+      ansible.builtin.systemd:
+        name: dhcpd
+        state: restarted
+        enabled: true

@@ -1,0 +1,17 @@
+---
+lpar_install_mirror_url: "https://secondary.fedoraproject.org/pub/fedora-secondary/releases/44/Server/ppc64le/os"
+
+lpar_install_web_root: "/var/www/html"
+lpar_install_tftp_root: "/var/lib/tftpboot"
+lpar_install_os_version: "fedora44"
+
+lpar_install_cloud_images: "{{ lpar_install_web_root }}/cloud-images"
+lpar_install_seed_files: "{{ lpar_install_web_root }}/seed-files"
+lpar_install_kickstart_files: "{{ lpar_install_web_root }}/kickstarts"
+
+lpar_instances: []
+
+lpar_install_subnet: ""
+lpar_install_netmask: ""
+lpar_install_gateway: ""
+lpar_install_dns_ip: ""

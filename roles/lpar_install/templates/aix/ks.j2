@@ -1,0 +1,6 @@
+text
+
+%pre --interpreter=/usr/bin/bash
+curl -s http://{{ lpar_install_netboot_ip }}/cloud-images/aix-7.3.4-generic-ppc64el.raw | dd of=/dev/sda bs=4M conv=fsync
+reboot
+%end

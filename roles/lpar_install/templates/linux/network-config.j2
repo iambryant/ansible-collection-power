@@ -1,0 +1,16 @@
+version: 1
+config:
+    - type: physical
+      name: eth0
+      mac_address: '{{ lpar_install_mac_address_colon }}'
+      subnets:
+      - type: static
+        address: '{{ item.ip_address }}'
+        netmask: '255.255.255.0'
+        gateway: '10.1.11.1'
+    - type: nameserver
+      address:
+      - '10.1.13.10'
+      - '10.1.13.11'
+      search:
+      - '{{ item.domain }}'

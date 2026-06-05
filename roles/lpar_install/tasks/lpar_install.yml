@@ -1,0 +1,157 @@
+---
+- name: "Check if logical partition {{ item.vm_name }} is running"
+  ansible.builtin.setup:
+  delegate_to: "{{ item.hostname }}.{{ item.domain }}"
+  ignore_errors: true
+  ignore_unreachable: true
+  register: lpar_check
+
+- name: "Ensure logical partition facts are gathered for {{ item.vm_name }}"
+  delegate_to: "{{ groups['hmc'][0] }}"
+  connection: local
+  block:
+    - name: "Ensure logical partition facts are gathered"
+      connection: local
+      ibm.power_hmc.powervm_lpar_instance:
+        hmc_host: "{{ groups['hmc'][0] }}"
+        hmc_auth:
+          username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+          password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+        system_name: "{{ item.system_name }}"
+        vm_name: "{{ item.vm_name }}"
+        advanced_info: true
+        state: facts
+      register: lpar_install_facts_output
+
+    - name: "Find MAC address for specific network"
+      ansible.builtin.set_fact:
+        lpar_install_mac_address: "{{ inner_item.mac_address }}"
+      when: inner_item.virtual_network_name == item.network_name
+      loop: "{{ lpar_install_facts_output['partition_info']['VirtualNetworkAdapters'] }}"
+      loop_control:
+        loop_var: inner_item
+
+    - name: "Fail if MAC address is empty"
+      ansible.builtin.fail:
+        msg: "MAC address not found for network: {{ item.network_name }}"
+      when: lpar_install_mac_address is not defined or lpar_install_mac_address | length == 0
+
+    - name: "Convert MAC address to colon format from fact variable"
+      ansible.builtin.set_fact:
+        lpar_install_mac_address_colon: "{{ lpar_install_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1:\\2:\\3:\\4:\\5:\\6') | lower }}"
+
+    - name: "Convert MAC address to hyphen format from fact variable"
+      ansible.builtin.set_fact:
+        lpar_install_mac_address_hyphen: "{{ lpar_install_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1-\\2-\\3-\\4-\\5-\\6') | lower }}"
+  when: lpar_check is failed or lpar_check is unreachable
+
+- name: "Run netboot network configuration tasks for logical partition {{ item.vm_name }}"
+  delegate_to: "{{ groups['netboot'][0] }}"
+  become: true
+  block:
+    - name: "Ensure seed files directory is present"
+      ansible.builtin.file:
+        path: "{{ lpar_install_seed_files }}"
+        state: directory
+        mode: '0755'
+
+    - name: "Ensure kickstart files directory is present"
+      ansible.builtin.file:
+        path: "{{ lpar_install_kickstart_files }}"
+        state: directory
+        mode: '0755'
+
+    - name: "Ensure base grub.cfg is present"
+      ansible.builtin.copy:
+        src: grub_conf_base
+        dest: "/var/lib/tftpboot/boot/grub/grub.cfg"
+        mode: '0644'
+
+    - name: "Ensure base dhcpd configuraton is present"
+      ansible.builtin.template:
+        src: dhcpd_conf_base.j2
+        dest: "/etc/dhcp/dhcpd.conf"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: "Ensure client seed files directory is present"
+      ansible.builtin.file:
+        path: "{{ lpar_install_seed_files }}/{{ item.hostname }}"
+        state: directory
+        mode: '0755'
+
+    - name: "Ensure client grub files directory is present"
+      ansible.builtin.file:
+        path: '/var/lib/tftpboot/boot/grub/grub.cfg.d'
+        state: directory
+        mode: '0755'
+
+    - name: "Ensure client grub configuration is present"
+      ansible.builtin.template:
+        src: grub_conf.j2
+        dest: "/var/lib/tftpboot/boot/grub/grub.cfg.d/grub.cfg-01-{{ lpar_install_mac_address_hyphen }}"
+        mode: '0644'
+
+    - name: "Ensure client kickstart configuration is present"
+      ansible.builtin.template:
+        src: "{{ item.os_type }}/ks.j2"
+        dest: "{{ lpar_install_kickstart_files}}/{{ item.hostname }}.ks"
+        mode: '0644'
+
+    - name: "Ensure client dhcp block is inserted into the subnet group"
+      ansible.builtin.blockinfile:
+        dest: /etc/dhcp/dhcpd.conf
+        insertafter: 'filename "{{ lpar_install_core_file_path }}";'
+        marker: "        #{mark} Ansible entry for {{ item.hostname }}"
+        block: "{{ lookup('template', 'dhcpd_conf_client.j2') }}"
+        state: present
+
+    - name: Restart dhcp-server
+      ansible.builtin.systemd:
+        name: dhcpd
+        state: restarted
+  when: lpar_check is failed or lpar_check is unreachable
+
+- name: "Include installation tasks for {{ item.os_type }}"
+  ansible.builtin.include_tasks: "{{ item.os_type }}-tasks.yml"
+  when: lpar_check is failed or lpar_check is unreachable
+
+- name: "Install logical partition {{ item.vm_name }} over the network"
+  connection: local
+  ibm.power_hmc.powervm_lpar_instance:
+    hmc_host: "{{ inventory_hostname }}"
+    hmc_auth:
+      username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+      password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+    system_name: "{{ item.system_name }}"
+    vm_name: "{{ item.vm_name }}"
+    install_settings:
+      vm_ip: "{{ item.ip_address }}"
+      nim_ip: "{{ hostvars[groups['netboot'][0]]['ansible_host'] }}"
+      nim_gateway: "{{ lpar_install_gateway }}"
+      nim_subnetmask: "{{ lpar_install_netmask }}"
+      vm_mac: "{{ lpar_install_mac_address }}"
+      timeout: "{{ item.timeout | default(11) }}"
+    action: install_os
+  delegate_to: "{{ groups['hmc'][0] }}"
+  when: lpar_check is failed or lpar_check is unreachable
+
+- name: "Ensure logical partition host keys are added to known_hosts"
+  ansible.builtin.known_hosts:
+    name: "{{ item.hostname }}.{{ item.domain }}"
+    key: "{{ lookup('ansible.builtin.pipe', 'ssh-keyscan -t ed25519 ' + item.hostname + '.' + item.domain) }}"
+    state: present
+  delegate_to: "localhost"
+  when: lpar_check is failed or lpar_check is unreachable
+
+- name: "Ensure system facts are gathered from logical partition {{ item.vm_name }}"
+  ansible.builtin.setup:
+  delegate_to: "{{ item.hostname }}.{{ item.domain }}"
+  when: lpar_check is failed or lpar_check is unreachable
+
+- name: "Print OS info from logical partition {{ item.vm_name }}"
+  ansible.builtin.debug:
+    msg: "Distribution: {{ ansible_facts['distribution'] }}, Version: {{ ansible_facts['distribution_version'] }}"
+  delegate_to: "{{ item.hostname }}.{{ item.domain }}"
+  when: lpar_check is failed or lpar_check is unreachable

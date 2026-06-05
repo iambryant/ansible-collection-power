@@ -1,0 +1,35 @@
+---
+- name: "Ensure facts are gathered for logical partition {{ item.vm_name }}"
+  delegate_to: "{{ groups['hmc'][0] }}"
+  connection: local
+  block:
+    - name: "Ensure facts are gathered for logical partition {{ item.vm_name }}"
+      connection: local
+      ibm.power_hmc.powervm_lpar_instance:
+        hmc_host: "{{ groups['hmc'][0] }}"
+        hmc_auth:
+          username: "{{ hostvars[groups['hmc'][0]]['ansible_user'] }}"
+          password: "{{ hostvars[groups['hmc'][0]]['ansible_password'] }}"
+        system_name: "{{ item.system_name }}"
+        vm_name: "{{ item.vm_name }}"
+        advanced_info: true
+        state: facts
+      register: lpar_install_facts_output
+
+    - name: "Find MAC address for specific network"
+      ansible.builtin.set_fact:
+        lpar_install_mac_address: "{{ inner_item.mac_address }}"
+      when: inner_item.virtual_network_name == item.network_name
+      loop: "{{ lpar_install_facts_output['partition_info']['VirtualNetworkAdapters'] }}"
+      loop_control:
+        loop_var: inner_item
+
+    - name: "Fail if MAC address is empty"
+      ansible.builtin.fail:
+        msg: "MAC address not found for network: {{ item.network_name }}"
+      when: lpar_install_mac_address is not defined or lpar_install_mac_address | length == 0
+
+    - name: "Convert MAC address formats"
+      ansible.builtin.set_fact:
+        lpar_install_mac_address_colon: "{{ lpar_install_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1:\\2:\\3:\\4:\\5:\\6') | lower }}"
+        lpar_install_mac_address_hyphen: "{{ lpar_install_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1-\\2-\\3-\\4-\\5-\\6') | lower }}"

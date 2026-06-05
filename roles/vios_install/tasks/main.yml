@@ -1,0 +1,4 @@
+---
+- name: "Process VIOS installations sequentially"
+  ansible.builtin.include_tasks: vios_install.yml
+  loop: "{{ vios_instances }}"

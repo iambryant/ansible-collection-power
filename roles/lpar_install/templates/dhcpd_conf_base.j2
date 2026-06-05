@@ -1,0 +1,13 @@
+default-lease-time 600;
+max-lease-time 7200;
+authoritative;
+
+subnet {{ lpar_install_subnet }} netmask {{ lpar_install_netmask }} {
+    allow bootp;
+    option routers {{ lpar_install_gateway }};
+    option domain-name-servers {{ lpar_install_dns_ip }};
+    group {
+        next-server {{ lpar_install_netboot_ip }};
+        filename "/boot/grub/powerpc-ieee1275/core.elf";
+    }
+}

@@ -1,0 +1,16 @@
+#cloud-config
+hostname: {{ item.hostname }}
+manage_etc_hosts: true
+fqdn: {{ item.hostname }}.{{ item.domain }}
+
+chpasswd:
+  expire: False
+users:
+  - name: ops
+    gecos: Management user
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAlP3nVosCYpq5btR1Ha1W3nCvPo7Ua6+W/hVZaCWh6v b77@77.local
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+
+package_upgrade: true

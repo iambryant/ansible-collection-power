@@ -1,0 +1,19 @@
+---
+- name: "Check if logical partition {{ item.vm_name }} is running"
+  ansible.builtin.setup:
+  delegate_to: "{{ item.hostname }}.{{ item.domain }}"
+  ignore_errors: true
+  ignore_unreachable: true
+  register: lpar_check
+
+- name: "Execute LPAR provisioning tasks"
+  block:
+    - name: "Gather HMC facts and MAC addresses"
+      ansible.builtin.include_tasks: gather_hmc_facts.yml
+
+    - name: "Configure netboot infrastrcture"
+      ansible.builtin.include_tasks: configure_netboot_client.yml
+
+    - name: "Run LPAR installation and verify"
+      ansible.builtin.include_tasks: install_lpar.yml
+  when: lpar_check is failed or lpar_check is unreachable
