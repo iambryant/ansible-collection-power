@@ -21,10 +21,10 @@
         dest: "{{ lpar_install_kickstart_files}}/{{ item.hostname }}.ks"
         mode: '0644'
 
-    - name: "Ensure client dhcp block is appended to the end of the file"
+    - name: "Ensure client dhcp block is appended to dhcpd.conf"
       ansible.builtin.blockinfile:
         dest: /etc/dhcp/dhcpd.conf
-        marker: "        #{mark} Ansible managed client config for {{ item.hostname }}"
+        marker: "# {mark} Ansible managed client config for {{ item.hostname }}"
         block: "{{ lookup('template', 'dhcpd_conf_client.j2') }}"
         state: present
 
