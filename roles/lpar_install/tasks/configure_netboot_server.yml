@@ -80,9 +80,11 @@
         mode: '0644'
 
     - name: "Ensure base dhcp configuration is present"
-      ansible.builtin.template:
-        src: dhcpd_conf_base.j2
-        dest: "/etc/dhcp/dhcpd.conf"
+      ansible.builtin.blockinfile:
+        path: "/etc/dhcp/dhcpd.conf"
+        create: yes
+        block: "{{ lookup('template', 'dhcpd_conf_base.j2') }}"
+        marker: "# {mark} Ansible managed base config"
         owner: root
         group: root
         mode: '0644'
