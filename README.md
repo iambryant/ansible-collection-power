@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/LPARS/ansible-collection-power/actions/workflows/ci.yml/badge.svg)](https://github.com/LPARS/ansible-collection-power/actions/workflows/ci.yml)
 
-This collection includes roles for automating common tasks on IBM Power. Note that this collection was designed around the limitations
+This collection includes roles for automating common tasks on IBM Power. 
+
+**Note:** This collection was designed around the limitations
 of my environment and may not be applicable to yours. Please check my ([power-dev-playbook](https://github.com/LPARS/power-dev-playbook))
 for more info.
 
@@ -23,8 +25,8 @@ None.
 
 ## Included Roles
 
-  - lpars.power.lpar_install ([documentation](https://github.com/lpars/ansible-collection-power/blob/main/roles/lpar_install/README.md))
-  - lpars.power.vios_install ([documentation](https://github.com/lpars/ansible-collection-power/blob/main/roles/vios_install/README.md))
+  - `lpars.power.lpar_install` ([documentation](https://github.com/lpars/ansible-collection-power/blob/main/roles/lpar_install/README.md))
+  - `lpars.power.vios_install` ([documentation](https://github.com/lpars/ansible-collection-power/blob/main/roles/vios_install/README.md))
 
 ## Usage
 
