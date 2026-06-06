@@ -42,7 +42,7 @@ A list of dictionaries containing individual VIOS configuration definitions.
 
 Please refer to https://galaxy.ansible.com/ui/repo/published/ibm/power_hmc/content/module/vios/ for all supported parameters.
 
-### install_settings:
+### install_settings
 
 | Property          | Type   | Required | Default / Notes |
 | :---              | :---   | :---:    | :--- |
