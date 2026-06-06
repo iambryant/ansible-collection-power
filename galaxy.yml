@@ -21,6 +21,7 @@ tags:
 
 dependencies:
   community.general: ">=8.0.0"
+  ibm.power_hmc: ">=1.15.0"
 
 repository: https://github.com/LPARS/ansible-collection-power
 
