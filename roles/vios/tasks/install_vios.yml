@@ -22,7 +22,7 @@
           password: "{{ ansible_password }}"
         system_name: "{{ item.system_name }}"
         name: "{{ item.name }}"
-        settings: "{{ item.profile_settings }}"
+        settings: "{{ item.settings }}"
         state: "present"
 
     - name: "Install VIOS logical partition {{ item.name }} using the image available on the HMC"
@@ -35,10 +35,10 @@
         name: "{{ item.name }}"
         image_dir: "{{ item.image_dir }}"
         vios_iso: "{{ item.vios_iso }}"
-        vios_IP: "{{ item.install_settings.vios_ip }}"
-        vios_gateway: "{{ item.install_settings.vios_gateway }}"
-        vios_subnetmask: "{{ item.install_settings.vios_subnetmask }}"
-        network_macaddr: "{{ item.install_settings.network_macaddr }}"
+        vios_IP: "{{ item.vios_ip }}"
+        vios_gateway: "{{ item.vios_gateway }}"
+        vios_subnetmask: "{{ item.vios_subnetmask }}"
+        network_macaddr: "{{ item.network_macaddr }}"
         action: install
 
     - name: "Ensure VIOS license is accepted"
