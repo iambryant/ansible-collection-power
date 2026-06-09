@@ -144,35 +144,4 @@
       ansible.builtin.file:
         path: "{{ lpar_kickstart_files}}/{{ item.hostname }}.ks"
         state: absent
-
-    - name: "Remove client dhcp block from dhcpd.conf"
-      delegate_to: "{{ groups['netboot'][0] }}"
-      become: true
-      ansible.builtin.blockinfile:
-        dest: /etc/dhcp/dhcpd.conf
-        marker: "# {mark} Ansible managed client config for {{ item.hostname }}"
-        state: absent
-      register: lpar_dhcp_cleanup
-
-    - name: "Ensure dhcpd is restarted after cleanup"
-      delegate_to: "{{ groups['netboot'][0] }}"
-      become: true
-      ansible.builtin.systemd:
-        name: dhcpd
-        state: restarted
-      when: lpar_dhcp_cleanup['changed']
-
-    - name: "Remove client grub configuration file"
-      delegate_to: "{{ groups['netboot'][0] }}"
-      become: true
-      ansible.builtin.file:
-        path: "{{ lpar_tftp_root }}/boot/grub/grub.cfg.d/grub.cfg-01-{{ lpar_mac_address_hyphen }}"
-        state: absent
-
-    - name: "Remove client kickstart configuration file"
-      delegate_to: "{{ groups['netboot'][0] }}"
-      become: true
-      ansible.builtin.file:
-        path: "{{ lpar_kickstart_files}}/{{ item.hostname }}.ks"
-        state: absent
   when: lpar_check is failed or lpar_check is unreachable
