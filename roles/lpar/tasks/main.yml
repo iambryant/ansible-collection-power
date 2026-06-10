@@ -4,6 +4,18 @@
   delegate_to: "{{ groups['netboot'][0] }}"
   delegate_facts: true
 
+- name: "Ensure lpar_netboot_server_subnet is set"
+  ansible.builtin.set_fact:
+    lpar_netboot_server_subnet: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['network'] }}"
+
+- name: "Ensure lpar_netboot_server_netmask is set"
+  ansible.builtin.set_fact:
+    lpar_netboot_server_netmask: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['netmask'] }}"
+
+- name: "Ensure lpar_netboot_server_gateway is set"
+  ansible.builtin.set_fact:
+    lpar_netboot_server_gateway: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['gateway'] }}"
+
 - name: "Ensure lpar_netboot_server_ip is set"
   ansible.builtin.set_fact:
     lpar_netboot_server_ip: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['address'] }}"

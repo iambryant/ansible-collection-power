@@ -8,7 +8,51 @@ None.
 
 ## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+    lpar_os_version: "almalinux8"
+
+The operating system version to target for installation. Defaults to `"almalinux8"`.
+
+    lpar_mirror_url: "https://repo.almalinux.org/almalinux/8/BaseOS/ppc64le/os/"
+
+The base URL for the repository mirror containing the installation files.
+
+    lpar_web_root: "/var/www/html"
+
+The local root directory of the web server hosting deployment media. Defaults to `/var/www/html`.
+
+    lpar_tftp_root: "/var/lib/tftpboot"
+
+The local root directory of the TFTP server for network booting. Defaults to `/var/lib/tftpboot`.
+
+    lpar_cloud_images: "{{ lpar_web_root }}/cloud-images"
+
+The path where cloud images are stored. Defaults to `{{ lpar_web_root }}/cloud-images`.
+
+    lpar_seed_files: "{{ lpar_web_root }}/seed-files"
+
+The path where cloud-init files are stored. Defaults to `{{ lpar_web_root }}/seed-files`.
+
+    lpar_kickstart_files: "{{ lpar_web_root }}/kickstarts"
+
+The path where Kickstart configuration files are stored. Defaults to `{{ lpar_web_root }}/kickstarts`.
+
+    lpar_instances: []
+
+The list of logical partitions to be installed. Supports the following parameters:
+
+| Parameter       | Type    | Required | Description                                                               |
+| :---            | :---    | :---     | :---                                                                      |
+| `system_name`   | String  | **Yes**  | The name of the managed system the LPAR was created on.                   |
+| `vm_name`       | String  | **Yes**  | The name of the LPAR.                                                     |
+| `os_type`       | String  | **Yes**  | The operating systemt type the LPAR will use (e.g. `"aix"` or `"linux"`). |
+| `vm_ip`         | String  | **Yes**  | The IP address the LPAR will use.                                         |
+| `netmask`       | String  | **Yes**  | The subnet mask the VIOS will use.                                        |
+| `gateway`       | String  | **Yes**  | The gateway the LPAR will use.                                            |
+| `network_name`  | String  | **Yes**  | The virtual network the LPAR will use.                                    |
+| `dns_ip`        | String  | **Yes**  | The DNS server the LPAR will use.                                         |
+| `domain`        | String  | **Yes**  | The domain name the LPAR will use.                                        |
+| `hostname`      | String  | **Yes**  | The hostname the LPAR will use.                                           |
+| `timeout`       | Integer | No       | The timeout to set for the installation of the LPAR (in minutes).         |
 
 ## Dependencies
 

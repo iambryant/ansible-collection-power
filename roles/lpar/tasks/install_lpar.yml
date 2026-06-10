@@ -90,8 +90,8 @@
         install_settings:
           vm_ip: "{{ item.ip_address }}"
           nim_ip: "{{ lpar_netboot_server_ip }}"
-          nim_gateway: "{{ lpar_gateway }}"
-          nim_subnetmask: "{{ lpar_netmask }}"
+          nim_gateway: "{{ item.gateway }}"
+          nim_subnetmask: "{{ item.subnetmask }}"
           vm_mac: "{{ lpar_mac_address }}"
           timeout: "{{ item.timeout | default(11) }}"
         action: install_os

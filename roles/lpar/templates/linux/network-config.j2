@@ -6,11 +6,10 @@ config:
       subnets:
       - type: static
         address: '{{ item.ip_address }}'
-        netmask: '255.255.255.0'
-        gateway: '10.1.11.1'
+        netmask: '{{ item.subnetmask }}'
+        gateway: '{{ item.gateway }}'
     - type: nameserver
       address:
-      - '10.1.13.10'
-      - '10.1.13.11'
+      - '{{ item.dns_ip }}'
       search:
       - '{{ item.domain }}'

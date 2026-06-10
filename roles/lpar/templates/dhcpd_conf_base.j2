@@ -2,9 +2,9 @@ default-lease-time 600;
 max-lease-time 7200;
 authoritative;
 
-subnet {{ lpar_subnet }} netmask {{ lpar_netmask }} {
+subnet {{ lpar_netboot_server_subnet }} netmask {{ lpar_netboot_server_netmask }} {
     allow bootp;
-    option routers {{ lpar_gateway }};
+    option routers {{ lpar_network_server_gateway }};
     option domain-name-servers {{ lpar_dns_ip }};
     next-server {{ lpar_netboot_server_ip }};
 }

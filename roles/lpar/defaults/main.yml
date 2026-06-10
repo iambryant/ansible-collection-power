@@ -8,9 +8,4 @@ lpar_cloud_images: "{{ lpar_web_root }}/cloud-images"
 lpar_seed_files: "{{ lpar_web_root }}/seed-files"
 lpar_kickstart_files: "{{ lpar_web_root }}/kickstarts"
 
-lpar_subnet: ""
-lpar_netmask: ""
-lpar_gateway: ""
-lpar_dns_ip: ""
-
 lpar_instances: []
