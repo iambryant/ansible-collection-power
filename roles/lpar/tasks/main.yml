@@ -1,5 +1,5 @@
 ---
-- name: "Ensure facts are gathered for netboot server"
+- name: "Ensure facts are gathered from netboot server"
   ansible.builtin.setup:
   delegate_to: "{{ groups['netboot'][0] }}"
   delegate_facts: true

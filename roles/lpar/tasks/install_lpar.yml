@@ -42,7 +42,7 @@
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       block:
-        - name: "Ensure seed and kickstart file directories are present"
+        - name: "Ensure client seed files directory is present"
           ansible.builtin.file:
             path: "{{ lpar_seed_files }}/{{ item.hostname }}"
             state: directory
@@ -103,7 +103,7 @@
         state: present
       delegate_to: "localhost"
 
-    - name: "Ensure system facts are gathered from logical partition {{ item.vm_name }}"
+    - name: "Ensure facts are gathered from logical partition {{ item.vm_name }}"
       ansible.builtin.setup:
       delegate_to: "{{ item.hostname }}.{{ item.domain }}"
       delegate_facts: true
@@ -144,4 +144,12 @@
       ansible.builtin.file:
         path: "{{ lpar_kickstart_files}}/{{ item.hostname }}.ks"
         state: absent
+
+    - name: "Ensure client seed files directory is absent"
+      delegate_to: "{{ groups['netboot'][0] }}"
+      become: true
+      ansible.builtin.file:
+        path: "{{ lpar_seed_files }}/{{ item.hostname }}"
+        state: absent
+
   when: lpar_check is failed or lpar_check is unreachable
