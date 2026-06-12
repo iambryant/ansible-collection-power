@@ -5,7 +5,7 @@ config:
       mac_address: '{{ lpar_mac_address_colon }}'
       subnets:
       - type: static
-        address: '{{ item.ip_address }}'
+        address: '{{ item.vm_ip }}'
         netmask: '{{ item.subnetmask }}'
         gateway: '{{ item.gateway }}'
     - type: nameserver

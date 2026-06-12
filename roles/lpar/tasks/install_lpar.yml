@@ -88,7 +88,7 @@
         system_name: "{{ item.system_name }}"
         vm_name: "{{ item.vm_name }}"
         install_settings:
-          vm_ip: "{{ item.ip_address }}"
+          vm_ip: "{{ item.vm_ip }}"
           nim_ip: "{{ lpar_netboot_server_ip }}"
           nim_gateway: "{{ item.gateway }}"
           nim_subnetmask: "{{ item.subnetmask }}"
