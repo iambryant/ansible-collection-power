@@ -10,6 +10,8 @@ config:
         gateway: '{{ item.gateway }}'
     - type: nameserver
       address:
-      - '{{ item.dns_ip }}'
+{% for nameserver in item.nameservers %}
+        - '{{ nameserver }}'
+{% endfor %}
       search:
       - '{{ item.domain }}'

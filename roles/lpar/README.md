@@ -40,19 +40,19 @@ The path where Kickstart configuration files are stored. Defaults to `{{ lpar_we
 
 The list of logical partitions to be installed. Supports the following parameters:
 
-| Parameter       | Type    | Required | Description                                                               |
-| :---            | :---    | :---     | :---                                                                      |
-| `system_name`   | String  | **Yes**  | The name of the managed system the LPAR was created on.                   |
-| `vm_name`       | String  | **Yes**  | The name of the LPAR.                                                     |
-| `os_type`       | String  | **Yes**  | The operating systemt type the LPAR will use (e.g. `"aix"` or `"linux"`). |
-| `vm_ip`         | String  | **Yes**  | The IP address the LPAR will use.                                         |
-| `netmask`       | String  | **Yes**  | The subnet mask the VIOS will use.                                        |
-| `gateway`       | String  | **Yes**  | The gateway the LPAR will use.                                            |
-| `network_name`  | String  | **Yes**  | The virtual network the LPAR will use.                                    |
-| `dns_ip`        | String  | **Yes**  | The DNS server the LPAR will use.                                         |
-| `domain`        | String  | **Yes**  | The domain name the LPAR will use.                                        |
-| `hostname`      | String  | **Yes**  | The hostname the LPAR will use.                                           |
-| `timeout`       | Integer | No       | The timeout to set for the installation of the LPAR (in minutes).         |
+| Parameter      | Type    | Required | Description                                                              |
+| :------------- | :------ | :------- | :----------------------------------------------------------------------- |
+| `system_name`  | String  | **Yes**  | The name of the managed system the LPAR was created on.                  |
+| `vm_name`      | String  | **Yes**  | The name of the LPAR.                                                    |
+| `os_type`      | String  | **Yes**  | The operating system type the LPAR will use (e.g. `"aix"` or `"linux"`). |
+| `network_name` | String  | **Yes**  | The virtual network the LPAR will use.                                   |
+| `hostname`     | String  | **Yes**  | The hostname the LPAR will use.                                          |
+| `domain`       | String  | **Yes**  | The domain name the LPAR will use.                                       |
+| `vm_ip`        | String  | **Yes**  | The IP address the LPAR will use.                                        |
+| `subnetmask`   | String  | **Yes**  | The subnet mask the LPAR will use.                                       |
+| `gateway`      | String  | **Yes**  | The gateway the LPAR will use.                                           |
+| `nameservers`  | String  | **Yes**  | The DNS servers the LPAR will use.                                       |
+| `timeout`      | Integer | No       | The timeout to set for the installation of the LPAR (in minutes).        |
 
 ## Dependencies
 
