@@ -3,6 +3,6 @@ menuentry 'Install OS' {
     insmod tftp
     set root=(tftp,{{ lpar_netboot_server_ip }})
     echo 'Loading OS Install kernel ...'
-    linux /ppc/ppc64/vmlinuz nameserver={{ lpar_dns_ip }} inst.stage2=http://{{ lpar_netboot_server_ip }}/{{ lpar_os_version }} inst.ks=http://{{ lpar_netboot_server_ip }}/kickstarts/{{ item.hostname}}.ks
+    linux /ppc/ppc64/vmlinuz inst.stage2=http://{{ lpar_netboot_server_ip }}/{{ lpar_os_version }} inst.ks=http://{{ lpar_netboot_server_ip }}/kickstarts/{{ item.hostname}}.ks
     initrd /ppc/ppc64/initrd.img
 }

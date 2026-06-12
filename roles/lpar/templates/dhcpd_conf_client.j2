@@ -1,7 +1,5 @@
 host {{ item.hostname }} {
     hardware ethernet {{ lpar_mac_address_colon }};
     fixed-address {{ item.ip_address }};
-    option host-name {{ item.hostname }};
-    option tftp-server-name "{{ lpar_netboot_server_ip }}";
     filename "/boot/grub/powerpc-ieee1275/core.elf";
 }
