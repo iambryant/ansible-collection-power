@@ -4,5 +4,5 @@
   tasks:
     - name: "Include lpars.power.lpar and run configure_netboot_server.yml"
       ansible.builtin.include_role:
-        name: lpar
+        name: lpars.power.lpar
         tasks_from: configure_netboot_server.yml
