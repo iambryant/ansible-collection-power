@@ -1,6 +1,5 @@
 ---
 - name: "Ensure netboot server is configured"
-  delegate_to: "{{ groups['netboot'][0] }}"
   become: true
   block:
     - name: "Include installation variables for {{ ansible_facts['os_family'] }}"

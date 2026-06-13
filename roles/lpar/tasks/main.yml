@@ -10,6 +10,7 @@
 
 - name: "Ensure netboot server is configured"
   ansible.builtin.include_tasks: configure_netboot_server.yml
+  delegate_to: "{{ groups['netboot'][0] }}"
 
 - name: "Run logical partition installations sequentially"
   ansible.builtin.include_tasks: install_lpar.yml
