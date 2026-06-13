@@ -1,82 +1,86 @@
 ---
-- name: "Ensure netboot server is configured"
-  become: true
-  block:
-    - name: "Include installation variables for {{ ansible_facts['os_family'] }}"
-      ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
+- name: "Ensure facts are gathered from netboot server"
+  ansible.builtin.setup:
 
-    - name: "Ensure necessary packages are present on netboot server"
-      ansible.builtin.package:
-        name: "{{ lpar_netboot_packages }}"
-        state: present
+- name: "Ensure lpar_netboot_server_ip is set"
+  ansible.builtin.set_fact:
+    lpar_netboot_server_ip: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['address'] }}"
 
-    - name: "Ensure necessary services are started and enabled on netboot server"
-      ansible.builtin.systemd:
-        name: "{{ inner_item }}"
-        state: started
-        enabled: true
-      loop: "{{ lpar_netboot_services }}"
-      loop_control:
-        loop_var: inner_item
+- name: "Include installation variables for {{ ansible_facts['os_family'] }}"
+  ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
 
-    - name: "Ensure necessary directories exist"
-      ansible.builtin.file:
-        path: "{{ inner_item }}"
-        state: directory
-        mode: '0755'
-      loop:
-        - "{{ lpar_web_root }}/{{ lpar_os_version }}"
-        - "{{ lpar_cloud_images }}"
-        - "{{ lpar_seed_files }}"
-        - "{{ lpar_kickstart_files }}"
-      loop_control:
-        loop_var: inner_item
+- name: "Ensure necessary packages are present on netboot server"
+  ansible.builtin.package:
+    name: "{{ lpar_netboot_packages }}"
+    state: present
 
-    - name: "Ensure Debian 13 cloud image is downloaded"
-      ansible.builtin.get_url:
-        url: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-ppc64el.raw"
-        dest: "{{ lpar_cloud_images }}/debian-13-generic-ppc64el.raw"
-        mode: '0644'
+- name: "Ensure necessary services are started and enabled on netboot server"
+  ansible.builtin.systemd:
+    name: "{{ inner_item }}"
+    state: started
+    enabled: true
+  loop: "{{ lpar_netboot_services }}"
+  loop_control:
+    loop_var: inner_item
 
-    - name: "Calculate cut-dirs value"
-      ansible.builtin.set_fact:
-        lpar_cut_dirs: "{{ (lpar_mirror_url | urlsplit('path')).split('/') | reject('equalto', '') | list | length }}"
+- name: "Ensure necessary directories exist"
+  ansible.builtin.file:
+    path: "{{ inner_item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ lpar_web_root }}/{{ lpar_os_version }}"
+    - "{{ lpar_cloud_images }}"
+    - "{{ lpar_seed_files }}"
+    - "{{ lpar_kickstart_files }}"
+  loop_control:
+    loop_var: inner_item
 
-    - name: "Ensure boot/ directory is downloaded to TFTP root"
-      ansible.builtin.command:
-        cmd: >
-          wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
-          --reject="index.html*" -e robots=off --directory-prefix={{ lpar_tftp_root }}/
-          {{ lpar_mirror_url }}/boot/
-      args:
-        creates: "{{ lpar_tftp_root }}/boot/grub/powerpc-ieee1275"
+- name: "Ensure Debian 13 cloud image is downloaded"
+  ansible.builtin.get_url:
+    url: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-ppc64el.raw"
+    dest: "{{ lpar_cloud_images }}/debian-13-generic-ppc64el.raw"
+    mode: '0644'
 
-    - name: "Ensure ppc/ directory is downloaded to TFTP root"
-      ansible.builtin.command:
-        cmd: >
-          wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
-          --reject="index.html*" -e robots=off --directory-prefix={{ lpar_tftp_root }}/
-          {{ lpar_mirror_url }}/ppc/
-      args:
-        creates: "{{ lpar_tftp_root }}/ppc/ppc64"
+- name: "Calculate cut-dirs value"
+  ansible.builtin.set_fact:
+    lpar_cut_dirs: "{{ (lpar_mirror_url | urlsplit('path')).split('/') | reject('equalto', '') | list | length }}"
 
-    - name: "Ensure images/ directory is downloaded to web root"
-      ansible.builtin.command:
-        cmd: >
-          wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
-          --reject="index.html*" -e robots=off --directory-prefix={{ lpar_web_root }}/{{ lpar_os_version }}/
-          {{ lpar_mirror_url }}/images/
-      args:
-        creates: "{{ lpar_web_root }}/{{ lpar_os_version }}/images/install.img"
+- name: "Ensure boot/ directory is downloaded to TFTP root"
+  ansible.builtin.command:
+    cmd: >
+      wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
+      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_tftp_root }}/
+      {{ lpar_mirror_url }}/boot/
+  args:
+    creates: "{{ lpar_tftp_root }}/boot/grub/powerpc-ieee1275"
 
-    - name: "Ensure grub configuration directory for client grubs is present"
-      ansible.builtin.file:
-        path: "{{ lpar_tftp_root }}/boot/grub/grub.cfg.d"
-        state: directory
-        mode: '0755'
+- name: "Ensure ppc/ directory is downloaded to TFTP root"
+  ansible.builtin.command:
+    cmd: >
+      wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
+      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_tftp_root }}/
+      {{ lpar_mirror_url }}/ppc/
+  args:
+    creates: "{{ lpar_tftp_root }}/ppc/ppc64"
 
-    - name: "Ensure base grub configuration is present"
-      ansible.builtin.template:
-        src: grub_conf_base.j2
-        dest: "{{ lpar_tftp_root }}/boot/grub/grub.cfg"
-        mode: '0644'
+- name: "Ensure images/ directory is downloaded to web root"
+  ansible.builtin.command:
+    cmd: >
+      wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
+      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_web_root }}/{{ lpar_os_version }}/
+      {{ lpar_mirror_url }}/images/
+  args:
+    creates: "{{ lpar_web_root }}/{{ lpar_os_version }}/images/install.img"
+
+- name: "Ensure grub configuration directory for client grubs is present"
+  ansible.builtin.file:
+    path: "{{ lpar_tftp_root }}/boot/grub/grub.cfg.d"
+    state: directory
+    mode: '0755'
+
+- name: "Ensure base grub configuration is present"
+  ansible.builtin.template:
+    src: grub_conf_base.j2
+    dest: "{{ lpar_tftp_root }}/boot/grub/grub.cfg"
+    mode: '0644'

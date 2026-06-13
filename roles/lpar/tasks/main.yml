@@ -1,16 +1,9 @@
 ---
-- name: "Ensure facts are gathered from netboot server"
-  ansible.builtin.setup:
+- name: "Ensure netboot server is configured"
   delegate_to: "{{ groups['netboot'][0] }}"
   delegate_facts: true
-
-- name: "Ensure lpar_netboot_server_ip is set"
-  ansible.builtin.set_fact:
-    lpar_netboot_server_ip: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['address'] }}"
-
-- name: "Ensure netboot server is configured"
+  become: true
   ansible.builtin.include_tasks: configure_netboot_server.yml
-  delegate_to: "{{ groups['netboot'][0] }}"
 
 - name: "Run logical partition installations sequentially"
   ansible.builtin.include_tasks: install_lpar.yml
