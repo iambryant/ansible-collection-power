@@ -2,6 +2,19 @@
 
 This role installs logical partitions on IBM Power.
 
+Before running the role, create an LPAR with:
+
+- A network adapter attached to the target network
+- A disk attached for operating system installation
+
+The role then:
+
+1. Configures DHCP, TFTP, and HTTP services on the provisioning host.
+2. Generates and publishes cloud-init data for the LPAR.
+3. Network boots the LPAR into a temporary installation environment.
+4. Deploys a pre-configured cloud image to the target disk.
+5. Configures the installed system to retrieve cloud-init data over HTTP on first boot.
+
 ## Requirements
 
 None.
@@ -18,11 +31,11 @@ The base URL for the repository mirror containing the installation files.
 
     lpar_web_root: "/var/www/html"
 
-The local root directory of the web server hosting deployment media. Defaults to `/var/www/html`.
+The local root directory of the provisioning server hosting deployment media. Defaults to `/var/www/html`.
 
     lpar_tftp_root: "/var/lib/tftpboot"
 
-The local root directory of the TFTP server for network booting. Defaults to `/var/lib/tftpboot`.
+The local root directory of the provisioning server for network booting. Defaults to `/var/lib/tftpboot`.
 
     lpar_cloud_images: "{{ lpar_web_root }}/cloud-images"
 
@@ -51,7 +64,7 @@ The list of logical partitions to be installed. Supports the following parameter
 | `vm_ip`        | String  | **Yes**  | The IP address the LPAR will use.                                        |
 | `subnetmask`   | String  | **Yes**  | The subnet mask the LPAR will use.                                       |
 | `gateway`      | String  | **Yes**  | The gateway the LPAR will use.                                           |
-| `nameservers`  | String  | **Yes**  | The DNS servers the LPAR will use.                                       |
+| `nameservers`  | List    | **Yes**  | The DNS servers the LPAR will use.                                       |
 | `timeout`      | Integer | No       | The timeout to set for the installation of the LPAR (in minutes).        |
 
 ## Dependencies

@@ -1,4 +1,3 @@
----
 - name: "Ensure netboot server is configured"
   delegate_to: "{{ groups['netboot'][0] }}"
   become: true
@@ -22,11 +21,24 @@
       loop_control:
         loop_var: inner_item
 
-    - name: "Ensure {{ lpar_os_version }} directory exists in web root"
+    - name: "Ensure necessary directories exist"
       ansible.builtin.file:
-        path: "{{ lpar_web_root }}/{{ lpar_os_version }}"
+        path: "{{ inner_item }}"
         state: directory
         mode: '0755'
+      loop:
+        - "{{ lpar_web_root }}/{{ lpar_os_version }}"
+        - "{{ lpar_cloud_images }}"
+        - "{{ lpar_seed_files }}"
+        - "{{ lpar_kickstart_files }}"
+      loop_control:
+        loop_var: inner_item
+
+    - name: "Ensure Debian 13 cloud image is downloaded"
+      ansible.builtin.get_url:
+        url: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-ppc64el.raw"
+        dest: "{{ lpar_cloud_images }}/debian-13-generic-ppc64el.raw"
+        mode: '0644'
 
     - name: "Calculate cut-dirs value"
       ansible.builtin.set_fact:
@@ -59,18 +71,11 @@
       args:
         creates: "{{ lpar_web_root }}/{{ lpar_os_version }}/images/install.img"
 
-    - name: "Ensure seed and kickstart file directories are present"
+    - name: "Ensure grub configuration directory for client grubs is present"
       ansible.builtin.file:
-        path: "{{ inner_item }}"
+        path: "{{ lpar_tftp_root }}/boot/grub/grub.cfg.d"
         state: directory
         mode: '0755'
-      loop:
-        - "{{ lpar_cloud_images }}"
-        - "{{ lpar_seed_files }}"
-        - "{{ lpar_kickstart_files }}"
-        - "{{ lpar_tftp_root }}/boot/grub/grub.cfg.d"
-      loop_control:
-        loop_var: inner_item
 
     - name: "Ensure base grub configuration is present"
       ansible.builtin.template:
