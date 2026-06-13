@@ -7,7 +7,7 @@ Before running the role, create an LPAR with:
 - A network adapter attached to the target network
 - A disk attached for operating system installation
 
-The role then:
+This role will then:
 
 1. Configures DHCP, TFTP, and HTTP services on the provisioning host.
 2. Generates and publishes cloud-init data for the LPAR.
