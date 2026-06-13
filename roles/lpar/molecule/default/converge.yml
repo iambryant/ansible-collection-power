@@ -1,0 +1,6 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include configure_netboot_server.yml"
+      include_tasks: "roles/lpar/tasks/configure_netboot_server.yml"

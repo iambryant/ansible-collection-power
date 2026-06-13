@@ -12,6 +12,10 @@ on:
   schedule:
     - cron: "30 3 * * 5"
 
+defaults:
+  run:
+    working-directory: 'lpars.power'
+
 jobs:
   lint:
     name: Lint
@@ -19,6 +23,36 @@ jobs:
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v6
+        with:
+          path: 'lpars.power'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+
+  molecule:
+    name: Molecule
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro:
+          - rockylinux9
+          - ubuntu2404
+          - debian13
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v6
+        with:
+          path: 'lpars.power'
 
       - name: Set up Python 3.
         uses: actions/setup-python@v6
@@ -26,9 +60,12 @@ jobs:
           python-version: '3.13'
 
       - name: Install test dependencies.
-        run: pip3 install yamllint ansible-lint
+        run: pip3 install ansible molecule molecule-plugins[docker] docker
 
-      - name: Lint code.
-        run: |
-          yamllint .
-          ansible-lint .
+      - name: Run Molecule tests.
+        run: molecule test
+        working-directory: roles/lpar
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix['distro'] }}
