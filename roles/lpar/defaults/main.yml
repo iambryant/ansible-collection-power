@@ -1,3 +1,4 @@
+---
 lpar_os_version: "almalinux8"
 lpar_mirror_url: "https://repo.almalinux.org/almalinux/8/BaseOS/ppc64le/os/"
 

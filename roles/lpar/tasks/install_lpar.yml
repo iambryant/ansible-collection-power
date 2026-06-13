@@ -1,3 +1,4 @@
+---
 - name: "Check if logical partition {{ item.vm_name }} is running"
   ansible.builtin.setup:
   delegate_to: "{{ item.hostname }}.{{ item.domain }}"

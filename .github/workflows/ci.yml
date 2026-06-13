@@ -54,6 +54,13 @@ jobs:
         with:
           path: 'lpars.power'
 
+      - name: Debug Directory Layout
+        run: |
+          echo "Current working directory"
+          pwd
+          echo "Root repository contents"
+          ls -R
+
       - name: Set up Python 3.
         uses: actions/setup-python@v6
         with:
