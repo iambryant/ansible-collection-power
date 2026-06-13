@@ -62,6 +62,13 @@ jobs:
       - name: Install test dependencies.
         run: pip3 install ansible molecule molecule-plugins[docker] docker
 
+      - name: Debug Directory Layout
+        run: |
+          echo "Current working directory"
+          pwd
+          echo "Root repository contents"
+          ls -R
+
       - name: Run Molecule tests.
         run: molecule test
         working-directory: roles/lpar
