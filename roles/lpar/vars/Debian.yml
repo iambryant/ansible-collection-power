@@ -1,10 +1,10 @@
 ---
-netboot_packages:
+lpar_netboot_packages:
   - apache2
   - tftpd-hpa
   - wget
 
-netboot_services:
+lpar_netboot_services:
   - apache2
   - tftpd-hpa
 

@@ -1,10 +1,10 @@
 ---
-netboot_packages:
+lpar_netboot_packages:
   - httpd
   - tftp-server
   - wget
 
-netboot_services:
+lpar_netboot_services:
   - httpd
   - tftp.socket
 
