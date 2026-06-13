@@ -3,5 +3,4 @@
   hosts: all
   tasks:
     - name: "Include configure_netboot_server.yml"
-      ansible.builtin.include_tasks:
-        name: "configure_netboot_server.yml"
+      ansible.builtin.include_tasks: "configure_netboot_server.yml"
