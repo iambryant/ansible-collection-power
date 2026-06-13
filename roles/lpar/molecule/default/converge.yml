@@ -2,6 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include lpars.power.lpar"
-      ansible.builtin.include_role:
-        name: "lpars.power.lpar"
+    - name: "Include configure_netboot_server.yml"
+      ansible.builtin.include_tasks:
+        name: "configure_netboot_server.yml"
