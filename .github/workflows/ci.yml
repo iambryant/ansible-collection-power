@@ -12,10 +12,6 @@ on:
   schedule:
     - cron: "30 3 * * 5"
 
-defaults:
-  run:
-    working-directory: 'lpars.power'
-
 jobs:
   lint:
     name: Lint
@@ -23,8 +19,6 @@ jobs:
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v6
-        with:
-          path: 'lpars.power'
 
       - name: Set up Python 3.
         uses: actions/setup-python@v6
@@ -47,12 +41,12 @@ jobs:
           - rockylinux9
           - ubuntu2404
           - debian13
+        role:
+          - lpar
 
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v6
-        with:
-          path: 'lpars.power'
 
       - name: Debug Directory Layout
         run: |
@@ -71,7 +65,7 @@ jobs:
 
       - name: Run Molecule tests.
         run: molecule test
-        working-directory: roles/lpar
+        working-directory: roles/${{ matrix.role }}
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
