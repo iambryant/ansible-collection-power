@@ -6,7 +6,7 @@
 
 - name: "Ensure lpar_netboot_server_ip is set"
   ansible.builtin.set_fact:
-    lpar_netboot_server_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
+    lpar_netboot_server_ip: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['address'] }}"
 
 - name: Configure netboot server tasks
   delegate_to: "{{ groups['netboot'][0] }}"
