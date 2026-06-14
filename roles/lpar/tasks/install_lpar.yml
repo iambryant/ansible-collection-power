@@ -1,5 +1,5 @@
 ---
-- name: "Check if logical partition {{ item.vm_name }} is running"
+- name: "Check if logical partition is running: {{ item.vm_name }}"
   ansible.builtin.setup:
   delegate_to: "{{ item.hostname }}.{{ item.domain }}"
   ignore_errors: true
@@ -7,6 +7,7 @@
   register: lpar_check
 
 - name: "Run logical partition provisioning tasks"
+  when: lpar_check is failed or lpar_check is unreachable
   block:
     - name: "Ensure facts are gathered for logical partition {{ item.vm_name }}"
       connection: local
@@ -143,7 +144,7 @@
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       ansible.builtin.file:
-        path: "{{ lpar_kickstart_files}}/{{ item.hostname }}.ks"
+        path: "{{ lpar_kickstart_files }}/{{ item.hostname }}.ks"
         state: absent
 
     - name: "Ensure client seed files directory is absent"
@@ -152,5 +153,3 @@
       ansible.builtin.file:
         path: "{{ lpar_seed_files }}/{{ item.hostname }}"
         state: absent
-
-  when: lpar_check is failed or lpar_check is unreachable

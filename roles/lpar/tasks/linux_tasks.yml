@@ -17,8 +17,10 @@
       ansible.builtin.template:
         src: "{{ item.os_type }}/network-config.j2"
         dest: "{{ lpar_seed_files }}/{{ item.hostname }}/network-config"
+        mode: '0644'
 
     - name: "Ensure client user-data file is present"
       ansible.builtin.template:
         src: "{{ item.os_type }}/user-data.j2"
         dest: "{{ lpar_seed_files }}/{{ item.hostname }}/user-data"
+        mode: '0644'

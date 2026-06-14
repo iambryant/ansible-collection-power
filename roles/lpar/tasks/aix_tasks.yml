@@ -16,15 +16,17 @@
 
     - name: "Ensure UUID is generated"
       ansible.builtin.command: uuidgen
-      register: system_uuid
+      register: lpar_system_uuid
       changed_when: false
 
     - name: "Ensure client meta-data file is present"
       ansible.builtin.template:
         src: "{{ item.os_type }}/meta_data.json.j2"
         dest: "{{ lpar_seed_files }}/{{ item.hostname }}/openstack/latest/meta_data.json"
+        mode: '0644'
 
     - name: "Ensure client user-config file is present"
       ansible.builtin.template:
         src: "{{ item.os_type }}/user_data.j2"
         dest: "{{ lpar_seed_files }}/{{ item.hostname }}/openstack/latest/user_data"
+        mode: '0644'
