@@ -64,7 +64,3 @@
         active: true
         reload: true
         ip_version: "ipv4"
-        firewall_config:
-          - port: 123
-            present: allow
-      # Change this to take custom ports
