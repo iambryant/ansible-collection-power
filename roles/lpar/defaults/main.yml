@@ -8,4 +8,4 @@ lpar_kickstart_files: "{{ lpar_web_root }}/kickstarts"
 
 lpar_instances: []
 
-cloud_init_config: {}
+lpar_cloud_init_config: {}
