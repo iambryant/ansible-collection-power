@@ -80,7 +80,7 @@
     - name: "Include installation tasks for {{ item.os_type }}"
       ansible.builtin.include_tasks: "{{ item.os_type }}_tasks.yml"
 
-    - name: "Install logical partition {{ item.vm_name }} over the network"
+    - name: "Install logical partition over the network"
       connection: local
       ibm.power_hmc.powervm_lpar_instance:
         hmc_host: "{{ inventory_hostname }}"

@@ -12,6 +12,7 @@
       ansible.builtin.template:
         src: "{{ item.os_type }}/meta-data.j2"
         dest: "{{ lpar_seed_files }}/{{ item.hostname }}/meta-data"
+        mode: '0644'
 
     - name: "Ensure client network-config file is present"
       ansible.builtin.template:
