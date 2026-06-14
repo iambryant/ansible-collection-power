@@ -1,7 +1,8 @@
 ---
 - name: "Ensure netboot server is configured"
   delegate_to: "{{ groups['netboot'][0] }}"
-  ansible.builtin.include_tasks: configure_netboot_server.yml
+  ansible.builtin.include_tasks:
+    file: configure_netboot_server.yml
     apply:
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
