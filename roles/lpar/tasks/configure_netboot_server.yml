@@ -73,7 +73,7 @@
   args:
     creates: "{{ lpar_web_root }}/{{ lpar_os_version }}/images/install.img"
 
-- name: "Ensure grub configuration directory for client grubs is present"
+- name: "Ensure grub configuration directory for clients is present"
   ansible.builtin.file:
     path: "{{ lpar_tftp_root }}/boot/grub/grub.cfg.d"
     state: directory

@@ -5,7 +5,7 @@
   block:
     - name: "Ensure UUID is generated"
       ansible.builtin.command: uuidgen
-      register: system_uuid
+      register: lpar_system_uuid
       changed_when: false
 
     - name: "Ensure client meta-data file is present"

@@ -1,5 +1,5 @@
 ---
-- name: "Check if logical partition is running: {{ item.vm_name }}"
+- name: "Check if logical partition is running"
   ansible.builtin.setup:
   delegate_to: "{{ item.hostname }}.{{ item.domain }}"
   ignore_errors: true
@@ -9,7 +9,7 @@
 - name: "Run logical partition provisioning tasks"
   when: lpar_check is failed or lpar_check is unreachable
   block:
-    - name: "Ensure facts are gathered for logical partition {{ item.vm_name }}"
+    - name: "Ensure facts are gathered for logical partition"
       connection: local
       ibm.power_hmc.powervm_lpar_instance:
         hmc_host: "{{ inventory_hostname }}"
@@ -59,7 +59,7 @@
         - name: "Ensure client kickstart configuration is present"
           ansible.builtin.template:
             src: "{{ item.os_type }}/ks.j2"
-            dest: "{{ lpar_kickstart_files}}/{{ item.hostname }}.ks"
+            dest: "{{ lpar_kickstart_files }}/{{ item.hostname }}.ks"
             mode: '0644'
 
         - name: "Ensure client dhcp block is appended to dhcpd.conf"
@@ -105,12 +105,12 @@
         state: present
       delegate_to: "localhost"
 
-    - name: "Ensure facts are gathered from logical partition {{ item.vm_name }}"
+    - name: "Ensure facts are gathered from logical partition"
       ansible.builtin.setup:
       delegate_to: "{{ item.hostname }}.{{ item.domain }}"
       delegate_facts: true
 
-    - name: "Print OS info from logical partition {{ item.vm_name }}"
+    - name: "Print OS info from logical partition"
       ansible.builtin.debug:
         msg: >
           Distribution: {{ hostvars[item.hostname + '.' + item.domain]['ansible_facts']['distribution'] }},

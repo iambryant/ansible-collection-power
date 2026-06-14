@@ -67,4 +67,4 @@
         firewall_config:
           - port: 123
             present: allow
-  # Change this to take custom ports
+    # Change this to take custom ports
