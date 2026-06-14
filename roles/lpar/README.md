@@ -9,11 +9,12 @@ Before running the role, create an LPAR with:
 
 This role will then:
 
-1. Configures DHCP, TFTP, and HTTP services on the provisioning host.
-2. Generates and publishes cloud-init data for the LPAR.
-3. Network boots the LPAR into a temporary installation environment.
-4. Deploys a pre-configured cloud image to the target disk.
-5. Configures the installed system to retrieve cloud-init data over HTTP on first boot.
+1. Configure TFTP and HTTP services on the provisioning host.
+2. Generate cloud-init data for the LPAR.
+3. Network boot the LPAR into a live Linux environment.
+4. Write a Debian 13 cloud image to the target disk.
+   > **Note:** AIX provisioning is currently a work in progress.
+5. Configure the LPAR to retrieve cloud-init data over HTTP on first boot.
 
 ## Requirements
 
