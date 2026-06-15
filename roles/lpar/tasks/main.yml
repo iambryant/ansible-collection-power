@@ -8,9 +8,6 @@
   ansible.builtin.set_fact:
     lpar_netboot_server_ip: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['default_ipv4']['address'] }}"
 
-- name: "Include installation variables for {{ hostvars[groups['netboot'][0]]['ansible_facts']['os_family'] }}"
-  ansible.builtin.include_vars: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['os_family'] }}.yml"
-
 - name: Configure netboot server tasks
   delegate_to: "{{ groups['netboot'][0] }}"
   become: true
