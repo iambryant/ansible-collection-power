@@ -77,7 +77,7 @@ None.
     - hosts: all
       gather_facts: false
       roles:
-        - lpars.power.lpar
+        - iambryant.power.lpar
 
 ## License
 

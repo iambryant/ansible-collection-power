@@ -50,7 +50,7 @@ None.
     - hosts: all
       gather_facts: false
       roles:
-        - lpars.power.vios
+        - iambryant.power.vios
 
 ## License
 

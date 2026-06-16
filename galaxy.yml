@@ -1,5 +1,5 @@
 ---
-namespace: lpars
+namespace: iambryant
 
 name: power
 
@@ -8,7 +8,7 @@ version: 1.0.0
 readme: README.md
 
 authors:
-  - lpars
+  - iambryant
 
 description: This collection includes roles for automating common tasks on IBM Power.
 
@@ -24,12 +24,12 @@ dependencies:
   community.general: ">=8.0.0"
   ibm.power_hmc: ">=1.15.0"
 
-repository: https://github.com/LPARS/ansible-collection-power
+repository: https://github.com/iambryant/ansible-collection-power
 
-documentation: https://github.com/LPARS/ansible-collection-power
+documentation: https://github.com/iambryant/ansible-collection-power
 
 homepage: http://example.com
 
-issues: https://github.com/LPARS/ansible-collection-power/issues
+issues: https://github.com/iambryant/ansible-collection-power/issues
 
 build_ignore: []
