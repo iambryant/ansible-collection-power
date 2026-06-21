@@ -70,7 +70,8 @@ The list of logical partitions to be installed. Supports the following parameter
 
 ## Dependencies
 
-None.
+You will need an role to configure your base subnet definitions in `dhcpd`. I recommend
+[berrtv.dhcp](https://galaxy.ansible.com/ui/standalone/roles/berrtv/dhcp/)
 
 ## Example Playbook
 
