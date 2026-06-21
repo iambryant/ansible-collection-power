@@ -72,7 +72,7 @@
 
         - name: "Ensure dhcpd is restarted"
           ansible.builtin.systemd:
-            name: dhcpd
+            name: "{{ lpar_dhcp_service }}"
             state: restarted
             enabled: true
           when: lpar_dhcp_config['changed']

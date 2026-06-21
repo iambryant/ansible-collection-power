@@ -8,5 +8,7 @@ lpar_netboot_services:
   - httpd
   - tftp.socket
 
+lpar_dhcp_service: "dhcpd"
+
 lpar_web_root: "/var/www/html"
 lpar_tftp_root: "/var/lib/tftpboot"
