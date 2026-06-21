@@ -18,6 +18,7 @@ license:
 license_file: 'LICENSE'
 
 tags:
+  - linux
   - power
 
 dependencies:
