@@ -1,5 +1,5 @@
 ---
-- name: "Include installation variables for {{ ansible_facts['os_family'] }}"
+- name: "Include installation variables for {{ hostvars[groups['netboot'][0]]['ansible_facts']['os_family'] }}.yml"
   ansible.builtin.include_vars: "{{ hostvars[groups['netboot'][0]]['ansible_facts']['os_family'] }}.yml"
 
 - name: "Ensure necessary packages are present on netboot server"
