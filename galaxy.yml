@@ -18,7 +18,7 @@ license:
 license_file: 'LICENSE'
 
 tags:
-  - linux
+  - infrastructure
   - power
 
 dependencies:
