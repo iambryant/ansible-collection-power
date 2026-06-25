@@ -2,12 +2,12 @@
 - name: Prepare
   hosts: all
   tasks:
-    - name: Update apt cache
+    - name: "Ensure apt cache is updated"
       ansible.builtin.apt:
         update_cache: true
       when: ansible_facts['os_family'] == "Debian"
 
-    - name: Update dnf cache
+    - name: "Ensure dnf cache is updated"
       ansible.builtin.dnf:
         update_cache: true
       when: ansible_facts['os_family'] == "RedHat"
