@@ -4,7 +4,8 @@
 
 This collection includes roles for automating common tasks on IBM Power. 
 
-> **Note:** This collection was designed around the limitations of my environment and may not be applicable to yours. Please check my
+> [!NOTE]
+> This collection was designed around the limitations of my environment and may not be applicable to yours. Please check my
 > [power-dev-playbook](https://github.com/iambryant/power-dev-playbook) for more info.
 
 ## Installation
