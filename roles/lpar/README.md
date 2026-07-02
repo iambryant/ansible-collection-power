@@ -13,8 +13,10 @@ This role will then:
 2. Generate cloud-init data for the LPAR.
 3. Network boot the LPAR into a live Linux environment.
 4. Write a Debian 13 cloud image to the target disk.
-   > [!NOTE]
-   > AIX provisioning is currently a work in progress.
+
+> [!NOTE]
+> AIX provisioning is currently a work in progress.
+
 5. Configure the LPAR to retrieve cloud-init data over HTTP on first boot.
 
 ## Requirements
