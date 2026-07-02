@@ -21,7 +21,6 @@ The list of of VIOS logical partitions to be created and installed. Supports the
 | `vios_ip`         | String     | **Yes**  | The IP address the VIOS will use.                               |
 | `vios_gateway`    | String     | **Yes**  | The gateway the VIOS will use.                                  |
 | `vios_subnetmask` | String     | **Yes**  | The subnet mask the VIOS will use.                              |
-| `network_macaddr` | String     | **Yes**  | The MAC address of the physical network port the VIOS will use. |
 | `settings`        | Dictionary | **Yes**  | Refer to `settings`.                                            |
 
 ### settings

@@ -26,6 +26,19 @@
         settings: "{{ item.settings }}"
         state: "present"
 
+    - name: "Get MAC address of first network adapter found"
+      ibm.power_hmc.hmc_command:
+        hmc_host: '{{ inventory_hostname }}'
+        hmc_auth:
+          username: "{{ ansible_user }}"
+          password: "{{ ansible_password }}"
+        cmd: 'lpar_netboot -M -n -t ent "{{ item.name }}" "default_profile" "{{ item.system_name }}"'
+      register: vios_hmc_command
+
+    - name: "Ensure MAC address is set as fact"
+      ansible.builtin.set_fact:
+        network_macaddr: '{{ vios_hmc_command.command_output | regex_findall("ent\s+\S+\s+([0-9a-fA-F]{12})") | first }}'
+
     - name: "Install VIOS logical partition using the image available on the HMC"
       ibm.power_hmc.vios:
         hmc_host: "{{ inventory_hostname }}"
@@ -39,7 +52,7 @@
         vios_IP: "{{ item.vios_ip }}"
         vios_gateway: "{{ item.vios_gateway }}"
         vios_subnetmask: "{{ item.vios_subnetmask }}"
-        network_macaddr: "{{ item.network_macaddr }}"
+        network_macaddr: "{{ network_macaddr }}"
         action: install
 
     - name: "Ensure VIOS license is accepted"
