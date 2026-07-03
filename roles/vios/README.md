@@ -27,6 +27,7 @@ The list of of VIOS logical partitions to be created and installed. Supports the
 
 | Parameter       | Type    | Required | Description                                                         |
 | :---            | :---    | :---      | :---                                                               |
+| `profile_name`  | String  | No      | The name of the profile the VIOS will use.                           |
 | `proc_mode`     | String  | **Yes** | The processor allocation mode the VIOS will use (`ded` or `shared`). |
 | `min_procs`     | Integer | **Yes** | The minimum processor allocation for the VIOS.                       |
 | `desired_procs` | Integer | **Yes** | The desired processor allocation for the VIOS.                       |

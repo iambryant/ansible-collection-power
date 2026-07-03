@@ -32,7 +32,7 @@
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        cmd: 'lpar_netboot -M -n -t ent "{{ item.name }}" "default_profile" "{{ item.system_name }}"'
+        cmd: 'lpar_netboot -M -n -t ent "{{ item.name }}" "{{ item.settings.profile_name }}" "{{ item.system_name }}"'
       register: vios_hmc_command
 
     - name: "Ensure MAC address is set as fact"
@@ -47,6 +47,7 @@
           password: "{{ ansible_password }}"
         system_name: "{{ item.system_name }}"
         name: "{{ item.name }}"
+        prof_name: "{{ item.settings.profile_name }}"
         image_dir: "{{ item.image_dir }}"
         vios_iso: "{{ item.vios_iso }}"
         vios_IP: "{{ item.vios_ip }}"
