@@ -39,7 +39,7 @@
   ansible.builtin.set_fact:
     lpar_cut_dirs: "{{ (lpar_mirror_url | urlsplit('path')).split('/') | reject('equalto', '') | list | length }}"
 
-- name: "Ensure boot/ directory is downloaded to TFTP root"
+- name: "Ensure boot/ directory is downloaded to TFTP root" # noqa: command-instead-of-module
   ansible.builtin.command:
     cmd: >
       wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
@@ -48,7 +48,7 @@
   args:
     creates: "{{ lpar_tftp_root }}/boot/grub/powerpc-ieee1275"
 
-- name: "Ensure ppc/ directory is downloaded to TFTP root"
+- name: "Ensure ppc/ directory is downloaded to TFTP root" # noqa: command-instead-of-module
   ansible.builtin.command:
     cmd: >
       wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
@@ -57,7 +57,7 @@
   args:
     creates: "{{ lpar_tftp_root }}/ppc/ppc64"
 
-- name: "Ensure images/ directory is downloaded to web root"
+- name: "Ensure images/ directory is downloaded to web root" # noqa: command-instead-of-module
   ansible.builtin.command:
     cmd: >
       wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
