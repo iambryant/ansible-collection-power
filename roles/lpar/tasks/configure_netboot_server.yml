@@ -22,7 +22,7 @@
     state: directory
     mode: '0755'
   loop:
-    - "{{ lpar_web_root }}/{{ lpar_os_version }}"
+    - "{{ lpar_web_root }}/{{ lpar_live_os_version }}"
     - "{{ lpar_cloud_images }}"
     - "{{ lpar_seed_files }}"
     - "{{ lpar_kickstart_files }}"
@@ -37,14 +37,14 @@
 
 - name: "Calculate cut-dirs value"
   ansible.builtin.set_fact:
-    lpar_cut_dirs: "{{ (lpar_mirror_url | urlsplit('path')).split('/') | reject('equalto', '') | list | length }}"
+    lpar_cut_dirs: "{{ (lpar_live_url | urlsplit('path')).split('/') | reject('equalto', '') | list | length }}"
 
 - name: "Ensure boot/ directory is downloaded to TFTP root" # noqa: command-instead-of-module
   ansible.builtin.command:
     cmd: >
       wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
       --reject="index.html*" -e robots=off --directory-prefix={{ lpar_tftp_root }}/
-      {{ lpar_mirror_url }}/boot/
+      {{ lpar_live_url }}/boot/
   args:
     creates: "{{ lpar_tftp_root }}/boot/grub/powerpc-ieee1275"
 
@@ -53,7 +53,7 @@
     cmd: >
       wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
       --reject="index.html*" -e robots=off --directory-prefix={{ lpar_tftp_root }}/
-      {{ lpar_mirror_url }}/ppc/
+      {{ lpar_live_url }}/ppc/
   args:
     creates: "{{ lpar_tftp_root }}/ppc/ppc64"
 
@@ -61,10 +61,10 @@
   ansible.builtin.command:
     cmd: >
       wget --mirror --no-parent --no-host-directories --cut-dirs={{ lpar_cut_dirs }}
-      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_web_root }}/{{ lpar_os_version }}/
-      {{ lpar_mirror_url }}/images/
+      --reject="index.html*" -e robots=off --directory-prefix={{ lpar_web_root }}/{{ lpar_live_os_version }}/
+      {{ lpar_live_url }}/images/
   args:
-    creates: "{{ lpar_web_root }}/{{ lpar_os_version }}/images/install.img"
+    creates: "{{ lpar_web_root }}/{{ lpar_live_os_version }}/images/install.img"
 
 - name: "Ensure grub configuration directory for clients is present"
   ansible.builtin.file:

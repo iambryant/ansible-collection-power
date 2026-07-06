@@ -25,33 +25,33 @@ None.
 
 ## Role Variables
 
-    lpar_os_version: "almalinux8"
+    lpar_live_os_version: "almalinux8"
 
-The operating system version to target for installation. Defaults to `"almalinux8"`.
+The live environment operating system version to use for writing cloud images to LPAR disks. Defaults to `"almalinux8"`.
 
-    lpar_mirror_url: "https://repo.almalinux.org/almalinux/8/BaseOS/ppc64le/os/"
+    lpar_live_url: "https://repo.almalinux.org/almalinux/8/BaseOS/ppc64le/os/"
 
-The base URL for the repository mirror containing the installation files.
+The base URL for the repository mirror containing the boot files for the live environment.
 
     lpar_web_root: "/var/www/html"
 
-The local root directory of the provisioning server hosting deployment media. Defaults to `/var/www/html`.
+The directory to use on the netboot server for hosting files served over HTTP. Defaults to `/var/www/html`.
 
     lpar_tftp_root: "/var/lib/tftpboot"
 
-The local root directory of the provisioning server for network booting. Defaults to `/var/lib/tftpboot`.
+The directory to use on the netboot server for hosting files served over TFTP. Defaults to `/var/lib/tftpboot`.
 
     lpar_cloud_images: "{{ lpar_web_root }}/cloud-images"
 
-The path where cloud images are stored. Defaults to `{{ lpar_web_root }}/cloud-images`.
+The directory within the web root to store cloud images. Defaults to `{{ lpar_web_root }}/cloud-images`.
 
     lpar_seed_files: "{{ lpar_web_root }}/seed-files"
 
-The path where cloud-init files are stored. Defaults to `{{ lpar_web_root }}/seed-files`.
+The directory within the web root to store cloud-init files. Defaults to `{{ lpar_web_root }}/seed-files`.
 
     lpar_kickstart_files: "{{ lpar_web_root }}/kickstarts"
 
-The path where Kickstart configuration files are stored. Defaults to `{{ lpar_web_root }}/kickstarts`.
+The directory within the web root to store Kickstart configuration files. Defaults to `{{ lpar_web_root }}/kickstarts`.
 
     lpar_instances: []
 
