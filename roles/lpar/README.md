@@ -7,6 +7,10 @@ Before running the role, create an LPAR with:
 - A network adapter attached to the target network
 - A disk attached for operating system installation
 
+> [!NOTE]
+> Make sure to allocate at least 4 GiB of RAM to the LPAR so that the live environment can fit into memory.
+> For more details, see: https://access.redhat.com/articles/rhel-limits#minimum-required-memory-3.
+
 This role will then:
 
 1. Configure TFTP and HTTP services on the provisioning host.
