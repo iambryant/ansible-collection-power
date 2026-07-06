@@ -37,8 +37,10 @@
 
     - name: "Convert MAC address formats"
       ansible.builtin.set_fact:
-        lpar_mac_address_colon: "{{ lpar_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1:\\2:\\3:\\4:\\5:\\6') | lower }}"
-        lpar_mac_address_hyphen: "{{ lpar_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1-\\2-\\3-\\4-\\5-\\6') | lower }}"
+        lpar_mac_address_colon: >
+          "{{ lpar_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1:\\2:\\3:\\4:\\5:\\6') | lower }}"
+        lpar_mac_address_hyphen: >
+          "{{ lpar_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\\1-\\2-\\3-\\4-\\5-\\6') | lower }}"
 
     - name: "Configure netboot infrastructure for logical partition {{ item.vm_name }}"
       delegate_to: "{{ groups['netboot'][0] }}"
@@ -101,7 +103,11 @@
     - name: "Ensure logical partition host keys are added to known_hosts"
       ansible.builtin.known_hosts:
         name: "{{ item.hostname }}.{{ item.domain }}"
-        key: "{{ lookup('ansible.builtin.pipe', 'ssh-keyscan -t ed25519 ' + item.hostname + '.' + item.domain + ' | grep ssh-ed25519') }}"
+        key: >
+          {{ lookup('ansible.builtin.pipe',
+             'ssh-keyscan -t ed25519 '
+             + item.hostname + '.' + item.domain
+             + ' | grep ssh-ed25519') }}
         state: present
       delegate_to: "localhost"
 
