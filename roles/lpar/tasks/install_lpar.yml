@@ -72,7 +72,7 @@
             state: present
           register: lpar_dhcp_config
 
-        - name: "Ensure dhcpd is restarted"
+        - name: "Ensure dhcpd is restarted" # noqa: no-handler
           ansible.builtin.systemd:
             name: "{{ lpar_dhcp_service }}"
             state: restarted
@@ -131,7 +131,7 @@
         state: absent
       register: lpar_dhcp_cleanup
 
-    - name: "Ensure dhcpd is restarted after cleanup"
+    - name: "Ensure dhcpd is restarted after cleanup" # noqa: no-handler
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       ansible.builtin.systemd:
