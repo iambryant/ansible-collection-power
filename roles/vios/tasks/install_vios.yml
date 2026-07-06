@@ -37,7 +37,8 @@
 
     - name: "Ensure MAC address is set as fact"
       ansible.builtin.set_fact:
-        network_macaddr: '{{ vios_hmc_command.command_output | regex_findall("ent\s+\S+\s+([0-9a-fA-F]{12})") | first }}'
+        vios_network_macaddr: >
+          {{ vios_hmc_command.command_output | regex_findall("ent\s+\S+\s+([0-9a-fA-F]{12})") | first }}
 
     - name: "Install VIOS logical partition using the image available on the HMC"
       ibm.power_hmc.vios:
@@ -53,7 +54,7 @@
         vios_IP: "{{ item.vios_ip }}"
         vios_gateway: "{{ item.vios_gateway }}"
         vios_subnetmask: "{{ item.vios_subnetmask }}"
-        network_macaddr: "{{ network_macaddr }}"
+        network_macaddr: "{{ vios_network_macaddr }}"
         action: install
 
     - name: "Ensure VIOS license is accepted"
