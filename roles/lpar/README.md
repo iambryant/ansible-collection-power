@@ -31,7 +31,7 @@ The live environment operating system version to use for writing cloud images to
 
     lpar_live_url: "https://repo.almalinux.org/almalinux/8/BaseOS/ppc64le/os/"
 
-The base URL for the repository mirror containing the boot files for the live environment.
+The base URL to use for downloading the boot files for the live environment.
 
     lpar_web_root: "/var/www/html"
 
@@ -51,7 +51,7 @@ The directory within the web root to store cloud-init files. Defaults to `{{ lpa
 
     lpar_kickstart_files: "{{ lpar_web_root }}/kickstarts"
 
-The directory within the web root to store Kickstart configuration files. Defaults to `{{ lpar_web_root }}/kickstarts`.
+The directory within the web root to store kickstart files. Defaults to `{{ lpar_web_root }}/kickstarts`.
 
     lpar_instances: []
 
