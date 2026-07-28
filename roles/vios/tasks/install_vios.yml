@@ -37,7 +37,7 @@
 
     - name: "Ensure MAC address is set as fact"
       ansible.builtin.set_fact:
-        vios_network_macaddr: >
+        vios_network_macaddr: >-
           {{ vios_hmc_command.command_output | regex_findall("ent\s+\S+\s+([0-9a-fA-F]{12})") | first }}
 
     - name: "Install VIOS logical partition using the image available on the HMC"
