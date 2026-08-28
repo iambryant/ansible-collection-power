@@ -62,7 +62,7 @@ The directory within the web root to store kickstart files. Defaults to `{{ lpar
 The list of logical partitions to be installed. Supports the following parameters:
 
 | Parameter      | Type    | Required | Description                                                              |
-| :------------- | :------ | :------- | :----------------------------------------------------------------------- |
+| :---           | :---    | :---     | :---                                                                     |
 | `system_name`  | String  | **Yes**  | The name of the managed system the LPAR was created on.                  |
 | `vm_name`      | String  | **Yes**  | The name of the LPAR.                                                    |
 | `os_type`      | String  | **Yes**  | The operating system type the LPAR will use (e.g. `"aix"` or `"linux"`). |
