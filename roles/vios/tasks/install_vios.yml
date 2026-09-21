@@ -75,7 +75,12 @@
           password: "{{ ansible_password }}"
         system_name: "{{ item.system_name }}"
         vios_name: "{{ item.name }}"
+        ip_version: "{{ vios_firewall_ip_version }}"
         state: setting_firewall
         active: true
         reload: true
-        ip_version: "ipv4"
+      loop:
+        - ipv4
+        - ipv6
+      loop_control:
+        loop_var: vios_firewall_ip_version
