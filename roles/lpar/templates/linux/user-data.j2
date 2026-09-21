@@ -3,4 +3,4 @@ hostname: {{ item.hostname }}
 manage_etc_hosts: true
 fqdn: {{ item.hostname }}.{{ item.domain }}
 
-{{ lpar_instance.user_data | to_nice_yaml(indent=2) }}
+{{ item.user_data | to_nice_yaml(indent=2) }}
