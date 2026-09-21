@@ -66,21 +66,3 @@
         system_name: "{{ item.system_name }}"
         name: "{{ item.name }}"
         action: accept_license
-
-    - name: "Ensure VIOS firewall is enabled and allows required traffic"
-      ibm.power_hmc.vios_secure:
-        hmc_host: "{{ inventory_hostname }}"
-        hmc_auth:
-          username: "{{ ansible_user }}"
-          password: "{{ ansible_password }}"
-        system_name: "{{ item.system_name }}"
-        vios_name: "{{ item.name }}"
-        ip_version: "{{ vios_firewall_ip_version }}"
-        state: setting_firewall
-        active: true
-        reload: true
-      loop:
-        - ipv4
-        - ipv6
-      loop_control:
-        loop_var: vios_firewall_ip_version
