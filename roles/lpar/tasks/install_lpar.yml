@@ -23,14 +23,23 @@
       register: lpar_facts_output
 
     - name: "Get MAC address for virtual LPAR"
-      ansible.builtin.set_fact:
-        lpar_mac_address: "{{ lpar_network_adapter.mac_address }}"
-      when:
-        - (lpar_instance.lpar_type | default('virtual')) == 'virtual'
-        - lpar_network_adapter.virtual_network_name == lpar_instance.network_name
-      loop: "{{ lpar_facts_output['partition_info']['VirtualNetworkAdapters'] | default([]) }}"
-      loop_control:
-        loop_var: lpar_network_adapter
+      when: (lpar_instance.lpar_type | default('virtual')) == 'virtual'
+      block:
+        - name: "Get MAC address for virtual LPAR"
+          ansible.builtin.set_fact:
+            lpar_mac_address: "{{ lpar_network_adapter.mac_address }}"
+          when:
+            - lpar_network_adapter.virtual_network_name == lpar_instance.network_name
+          loop: "{{ lpar_facts_output['partition_info']['VirtualNetworkAdapters'] | default([]) }}"
+          loop_control:
+            loop_var: lpar_network_adapter
+
+        # Triggered if you forget to assign a virtual network adapter to LPAR
+        - name: "Fail if MAC address is empty"
+          ansible.builtin.fail:
+            msg: "MAC address not found for network: {{ lpar_instance.network_name }}"
+          when:
+            - lpar_mac_address is not defined or lpar_mac_address | length == 0
 
     - name: "Get MAC address for full-system LPAR"
       block:
@@ -47,11 +56,6 @@
           ansible.builtin.set_fact:
             lpar_mac_address: "{{ lpar_hmc_command.command_output | regex_findall('ent\\s+\\S+\\s+([0-9a-fA-F]{12})') | first }}"
       when: (lpar_instance.lpar_type | default('virtual')) == 'full_system'
-
-    - name: "Fail if MAC address is empty"
-      ansible.builtin.fail:
-        msg: "MAC address not found for network: {{ lpar_instance.network_name }}"
-      when: lpar_mac_address is not defined or lpar_mac_address | length == 0
 
     - name: "Convert MAC address formats"
       ansible.builtin.set_fact:
