@@ -107,21 +107,22 @@
 
     - name: "Install logical partition over the network"
       connection: local
-      ibm.power_hmc.powervm_lpar_instance:
+      ibm.power_hmc.hmc_command:
         hmc_host: "{{ inventory_hostname }}"
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        system_name: "{{ lpar_instance.system_name }}"
-        vm_name: "{{ lpar_instance.vm_name }}"
-        install_settings:
-          vm_ip: "{{ lpar_instance.vm_ip }}"
-          nim_ip: "{{ lpar_netboot_server_ip }}"
-          nim_gateway: "{{ lpar_instance.gateway }}"
-          nim_subnetmask: "{{ lpar_instance.subnetmask }}"
-          vm_mac: "{{ lpar_mac_address }}"
-          timeout: "{{ lpar_instance.timeout | default(11) }}"
-        action: install_os
+        cmd: >-
+          lpar_netboot
+          -t ent
+          -m "{{ lpar_mac_address }}"
+          -s "{{ lpar_netboot_server_ip }}"
+          -G "{{ lpar_instance.gateway }}"
+          -C "{{ lpar_instance.vm_ip }}"
+          -K "{{ lpar_instance.subnetmask }}"
+          "{{ lpar_instance.vm_name }}"
+          "default_profile"
+          "{{ lpar_instance.system_name }}"
 
     - name: "Ensure logical partition host keys are added to known_hosts"
       ansible.builtin.known_hosts:
