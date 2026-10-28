@@ -74,7 +74,6 @@ The list of logical partitions to be installed. Supports the following parameter
 | `subnetmask`   | String  | **Yes**  | The subnet mask the LPAR will use.                                       |
 | `gateway`      | String  | **Yes**  | The gateway the LPAR will use.                                           |
 | `nameservers`  | List    | **Yes**  | The DNS servers the LPAR will use.                                       |
-| `timeout`      | Integer | No       | The timeout to set for the installation of the LPAR (in minutes).        |
 
 > [!NOTE]
 > When `lpar_type` is set to `full_system`, the logical partition will consume all available system resources. No other
