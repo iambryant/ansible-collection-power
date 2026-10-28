@@ -49,7 +49,7 @@
             hmc_auth:
               username: "{{ ansible_user }}"
               password: "{{ ansible_password }}"
-            cmd: 'lpar_netboot -M -n -t ent "{{ lpar_instance.profile_name }}" "{{ lpar_instance.vm_name }}" "{{ lpar_instance.system_name }}"'
+            cmd: 'lpar_netboot -M -n -t ent "{{ lpar_instance.vm_name }}" default_profile "{{ lpar_instance.system_name }}"'
           register: lpar_hmc_command
 
         - name: "Get MAC address from command output"
