@@ -65,6 +65,7 @@ The list of logical partitions to be installed. Supports the following parameter
 | :---           | :---    | :---     | :---                                                                     |
 | `system_name`  | String  | **Yes**  | The name of the managed system the LPAR was created on.                  |
 | `vm_name`      | String  | **Yes**  | The name of the LPAR.                                                    |
+| `lpar_type`    | String  | **Yes**  | The type of LPAR being deployed (e.g. `"full_system"` or `"virtual"`).   |
 | `os_type`      | String  | **Yes**  | The operating system type the LPAR will use (e.g. `"aix"` or `"linux"`). |
 | `network_name` | String  | **Yes**  | The virtual network the LPAR will use.                                   |
 | `hostname`     | String  | **Yes**  | The hostname the LPAR will use.                                          |
@@ -74,6 +75,10 @@ The list of logical partitions to be installed. Supports the following parameter
 | `gateway`      | String  | **Yes**  | The gateway the LPAR will use.                                           |
 | `nameservers`  | List    | **Yes**  | The DNS servers the LPAR will use.                                       |
 | `timeout`      | Integer | No       | The timeout to set for the installation of the LPAR (in minutes).        |
+
+> [!NOTE]
+> When `lpar_type` is set to `full_system`, the logical partition will consume all available system resources. No other
+> logical partitions can run concurrently on the same managed system while that partition is active.
 
 ## Dependencies
 

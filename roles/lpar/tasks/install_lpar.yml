@@ -22,13 +22,31 @@
         state: facts
       register: lpar_facts_output
 
-    - name: "Find MAC address for specific network"
+    - name: "Get MAC address for virtual LPAR"
       ansible.builtin.set_fact:
         lpar_mac_address: "{{ lpar_network_adapter.mac_address }}"
-      when: lpar_network_adapter.virtual_network_name == lpar_instance.network_name
-      loop: "{{ lpar_facts_output['partition_info']['VirtualNetworkAdapters'] }}"
+      when:
+        - (lpar_instance.lpar_type | default('virtual')) == 'virtual'
+        - lpar_network_adapter.virtual_network_name == lpar_instance.network_name
+      loop: "{{ lpar_facts_output['partition_info']['VirtualNetworkAdapters'] | default([]) }}"
       loop_control:
         loop_var: lpar_network_adapter
+
+    - name: "Get MAC address for full-system LPAR"
+      block:
+        - name: "Run lpar_netboot command to get hardware MAC address"
+          ibm.power_hmc.hmc_command:
+            hmc_host: "{{ inventory_hostname }}"
+            hmc_auth:
+              username: "{{ ansible_user }}"
+              password: "{{ ansible_password }}"
+            cmd: 'lpar_netboot -M -n -t ent "{{ lpar_instance.profile_name }}" "{{ lpar_instance.vm_name }}" "{{ lpar_instance.system_name }}"'
+          register: lpar_hmc_command
+
+        - name: "Get MAC address from command output"
+          ansible.builtin.set_fact:
+            lpar_mac_address: "{{ lpar_hmc_command.command_output | regex_findall('ent\\s+\\S+\\s+([0-9a-fA-F]{12})') | first }}"
+      when: (lpar_instance.lpar_type | default('virtual')) == 'full_system'
 
     - name: "Fail if MAC address is empty"
       ansible.builtin.fail:
