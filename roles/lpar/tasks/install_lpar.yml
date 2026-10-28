@@ -44,6 +44,7 @@
     - name: "Get MAC address for full-system LPAR"
       block:
         - name: "Run lpar_netboot command to get hardware MAC address"
+          connection: local
           ibm.power_hmc.hmc_command:
             hmc_host: "{{ inventory_hostname }}"
             hmc_auth:
