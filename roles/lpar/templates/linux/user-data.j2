@@ -1,6 +1,6 @@
 #cloud-config
-hostname: {{ item.hostname }}
+hostname: {{ lpar_instance.hostname }}
 manage_etc_hosts: true
-fqdn: {{ item.hostname }}.{{ item.domain }}
+fqdn: {{ lpar_instance.hostname }}.{{ lpar_instance.domain }}
 
-{{ item.user_data | to_nice_yaml(indent=2) }}
+{{ lpar_instance.user_data | to_nice_yaml(indent=2) }}

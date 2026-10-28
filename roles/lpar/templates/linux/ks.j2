@@ -7,7 +7,7 @@ mount /dev/sda1 /mnt
 cat << 'EOF' > /mnt/etc/cloud/cloud.cfg.d/99_network_datasource.cfg
 datasource:
   NoCloud:
-    seedfrom: http://{{ lpar_netboot_server_ip }}/seed-files/{{ item.hostname }}/
+    seedfrom: http://{{ lpar_netboot_server_ip }}/seed-files/{{ lpar_instance.hostname }}/
 EOF
 umount /mnt
 reboot

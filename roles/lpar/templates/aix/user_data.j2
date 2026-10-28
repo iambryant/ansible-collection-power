@@ -1,7 +1,7 @@
 #cloud-config
-hostname: {{ item.hostname }}
+hostname: {{ lpar_instance.hostname }}
 manage_etc_hosts: true
-fqdn: {{ item.hostname }}.{{ item.domain }}
+fqdn: {{ lpar_instance.hostname }}.{{ lpar_instance.domain }}
 
 # TO DO: Figure out how to disable root
 

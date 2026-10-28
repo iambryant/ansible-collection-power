@@ -1,5 +1,5 @@
-host {{ item.hostname }} {
+host {{ lpar_instance.hostname }} {
     hardware ethernet {{ lpar_mac_address_colon }};
-    fixed-address {{ item.vm_ip }};
+    fixed-address {{ lpar_instance.vm_ip }};
     filename "/boot/grub/powerpc-ieee1275/core.elf";
 }

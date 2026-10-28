@@ -5,13 +5,13 @@ config:
       mac_address: '{{ lpar_mac_address_colon }}'
       subnets:
       - type: static
-        address: '{{ item.vm_ip }}'
-        netmask: '{{ item.subnetmask }}'
-        gateway: '{{ item.gateway }}'
+        address: '{{ lpar_instance.vm_ip }}'
+        netmask: '{{ lpar_instance.subnetmask }}'
+        gateway: '{{ lpar_instance.gateway }}'
     - type: nameserver
       address:
-{% for nameserver in item.nameservers %}
+{% for nameserver in lpar_instance.nameservers %}
         - '{{ nameserver }}'
 {% endfor %}
       search:
-      - '{{ item.domain }}'
+      - '{{ lpar_instance.domain }}'
