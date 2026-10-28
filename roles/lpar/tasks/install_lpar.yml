@@ -116,7 +116,7 @@
           lpar_netboot
           -t ent
           -m "{{ lpar_mac_address }}"
-          -s "{{ lpar_netboot_server_ip }}"
+          -S "{{ lpar_netboot_server_ip }}"
           -G "{{ lpar_instance.gateway }}"
           -C "{{ lpar_instance.vm_ip }}"
           -K "{{ lpar_instance.subnetmask }}"
