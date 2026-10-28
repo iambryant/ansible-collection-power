@@ -1,7 +1,7 @@
 ---
 - name: "Check if logical partition is running"
   ansible.builtin.setup:
-  delegate_to: "{{ item.hostname }}.{{ item.domain }}"
+  delegate_to: "{{ lpar_instance.hostname }}.{{ lpar_instance.domain }}"
   ignore_errors: true
   ignore_unreachable: true
   register: lpar_check
@@ -16,23 +16,23 @@
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        system_name: "{{ item.system_name }}"
-        vm_name: "{{ item.vm_name }}"
+        system_name: "{{ lpar_instance.system_name }}"
+        vm_name: "{{ lpar_instance.vm_name }}"
         advanced_info: true
         state: facts
       register: lpar_facts_output
 
     - name: "Find MAC address for specific network"
       ansible.builtin.set_fact:
-        lpar_mac_address: "{{ inner_item.mac_address }}"
-      when: inner_item.virtual_network_name == item.network_name
+        lpar_mac_address: "{{ lpar_network_adapter.mac_address }}"
+      when: lpar_network_adapter.virtual_network_name == lpar_instance.network_name
       loop: "{{ lpar_facts_output['partition_info']['VirtualNetworkAdapters'] }}"
       loop_control:
-        loop_var: inner_item
+        loop_var: lpar_network_adapter
 
     - name: "Fail if MAC address is empty"
       ansible.builtin.fail:
-        msg: "MAC address not found for network: {{ item.network_name }}"
+        msg: "MAC address not found for network: {{ lpar_instance.network_name }}"
       when: lpar_mac_address is not defined or lpar_mac_address | length == 0
 
     - name: "Convert MAC address formats"
@@ -42,13 +42,13 @@
         lpar_mac_address_hyphen: >-
           {{ lpar_mac_address | regex_replace('(..)(..)(..)(..)(..)(..)', '\1-\2-\3-\4-\5-\6') | lower }}
 
-    - name: "Configure netboot infrastructure for logical partition {{ item.vm_name }}"
+    - name: "Configure netboot infrastructure for logical partition {{ lpar_instance.vm_name }}"
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       block:
         - name: "Ensure client seed files directory is present"
           ansible.builtin.file:
-            path: "{{ lpar_seed_files }}/{{ item.hostname }}"
+            path: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}"
             state: directory
             mode: '0755'
 
@@ -60,14 +60,14 @@
 
         - name: "Ensure client kickstart configuration is present"
           ansible.builtin.template:
-            src: "{{ item.os_type }}/ks.j2"
-            dest: "{{ lpar_kickstart_files }}/{{ item.hostname }}.ks"
+            src: "{{ lpar_instance.os_type }}/ks.j2"
+            dest: "{{ lpar_kickstart_files }}/{{ lpar_instance.hostname }}.ks"
             mode: '0644'
 
         - name: "Ensure client dhcp block is appended to dhcpd.conf"
           ansible.builtin.blockinfile:
             dest: /etc/dhcp/dhcpd.conf
-            marker: "# {mark} Ansible managed client config for {{ item.hostname }}"
+            marker: "# {mark} Ansible managed client config for {{ lpar_instance.hostname }}"
             block: "{{ lookup('template', 'dhcpd_conf_client.j2') }}"
             state: present
           register: lpar_dhcp_config
@@ -79,8 +79,8 @@
             enabled: true
           when: lpar_dhcp_config['changed']
 
-    - name: "Include installation tasks for {{ item.os_type }}"
-      ansible.builtin.include_tasks: "{{ item.os_type }}_tasks.yml"
+    - name: "Include installation tasks for {{ lpar_instance.os_type }}"
+      ansible.builtin.include_tasks: "{{ lpar_instance.os_type }}_tasks.yml"
 
     - name: "Install logical partition over the network"
       connection: local
@@ -89,45 +89,49 @@
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        system_name: "{{ item.system_name }}"
-        vm_name: "{{ item.vm_name }}"
+        system_name: "{{ lpar_instance.system_name }}"
+        vm_name: "{{ lpar_instance.vm_name }}"
         install_settings:
-          vm_ip: "{{ item.vm_ip }}"
+          vm_ip: "{{ lpar_instance.vm_ip }}"
           nim_ip: "{{ lpar_netboot_server_ip }}"
-          nim_gateway: "{{ item.gateway }}"
-          nim_subnetmask: "{{ item.subnetmask }}"
+          nim_gateway: "{{ lpar_instance.gateway }}"
+          nim_subnetmask: "{{ lpar_instance.subnetmask }}"
           vm_mac: "{{ lpar_mac_address }}"
-          timeout: "{{ item.timeout | default(11) }}"
+          timeout: "{{ lpar_instance.timeout | default(11) }}"
         action: install_os
 
     - name: "Ensure logical partition host keys are added to known_hosts"
       ansible.builtin.known_hosts:
-        name: "{{ item.hostname }}.{{ item.domain }}"
+        name: "{{ lpar_instance.hostname }}.{{ lpar_instance.domain }}"
         key: >
           {{ lookup('ansible.builtin.pipe',
              'ssh-keyscan -t ed25519 '
-             + item.hostname + '.' + item.domain
+             + lpar_instance.hostname + '.' + lpar_instance.domain
              + ' | grep ssh-ed25519') }}
         state: present
       delegate_to: "localhost"
 
     - name: "Ensure facts are gathered from logical partition"
       ansible.builtin.setup:
-      delegate_to: "{{ item.hostname }}.{{ item.domain }}"
+      delegate_to: "{{ lpar_instance.hostname }}.{{ lpar_instance.domain }}"
       delegate_facts: true
 
     - name: "Print OS info from logical partition"
       ansible.builtin.debug:
         msg: >
-          Distribution: {{ hostvars[item.hostname + '.' + item.domain]['ansible_facts']['distribution'] }},
-          Version: {{ hostvars[item.hostname + '.' + item.domain]['ansible_facts']['distribution_version'] }}
+          Distribution: {{ hostvars[lpar_instance.hostname
+          + '.'
+          + lpar_instance.domain]['ansible_facts']['distribution'] }},
+          Version: {{ hostvars[lpar_instance.hostname
+          + '.'
+          + lpar_instance.domain]['ansible_facts']['distribution_version'] }}
 
     - name: "Remove client dhcp block from dhcpd.conf"
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       ansible.builtin.blockinfile:
         dest: /etc/dhcp/dhcpd.conf
-        marker: "# {mark} Ansible managed client config for {{ item.hostname }}"
+        marker: "# {mark} Ansible managed client config for {{ lpar_instance.hostname }}"
         state: absent
       register: lpar_dhcp_cleanup
 
@@ -150,12 +154,12 @@
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       ansible.builtin.file:
-        path: "{{ lpar_kickstart_files }}/{{ item.hostname }}.ks"
+        path: "{{ lpar_kickstart_files }}/{{ lpar_instance.hostname }}.ks"
         state: absent
 
     - name: "Ensure client seed files directory is absent"
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       ansible.builtin.file:
-        path: "{{ lpar_seed_files }}/{{ item.hostname }}"
+        path: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}"
         state: absent

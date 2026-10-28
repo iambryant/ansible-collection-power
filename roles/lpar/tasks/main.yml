@@ -18,3 +18,5 @@
 - name: "Run logical partition installations sequentially"
   ansible.builtin.include_tasks: install_lpar.yml
   loop: "{{ lpar_instances }}"
+  loop_control:
+    loop_var: lpar_instance

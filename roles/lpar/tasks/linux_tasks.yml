@@ -10,18 +10,18 @@
 
     - name: "Ensure client meta-data file is present"
       ansible.builtin.template:
-        src: "{{ item.os_type }}/meta-data.j2"
-        dest: "{{ lpar_seed_files }}/{{ item.hostname }}/meta-data"
+        src: "{{ lpar_instance.os_type }}/meta-data.j2"
+        dest: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}/meta-data"
         mode: '0644'
 
     - name: "Ensure client network-config file is present"
       ansible.builtin.template:
-        src: "{{ item.os_type }}/network-config.j2"
-        dest: "{{ lpar_seed_files }}/{{ item.hostname }}/network-config"
+        src: "{{ lpar_instance.os_type }}/network-config.j2"
+        dest: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}/network-config"
         mode: '0644'
 
     - name: "Ensure client user-data file is present"
       ansible.builtin.template:
-        src: "{{ item.os_type }}/user-data.j2"
-        dest: "{{ lpar_seed_files }}/{{ item.hostname }}/user-data"
+        src: "{{ lpar_instance.os_type }}/user-data.j2"
+        dest: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}/user-data"
         mode: '0644'

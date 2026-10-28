@@ -5,14 +5,14 @@
   block:
     - name: "Ensure openstack structure is present"
       ansible.builtin.file:
-        path: "{{ lpar_seed_files }}/{{ item.hostname }}/{{ inner_item }}"
+        path: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}/{{ lpar_openstack_directory }}"
         state: directory
         mode: '0755'
       loop:
         - openstack
         - openstack/latest
       loop_control:
-        loop_var: inner_item
+        loop_var: lpar_openstack_directory
 
     - name: "Ensure UUID is generated"
       ansible.builtin.command: uuidgen
@@ -21,12 +21,12 @@
 
     - name: "Ensure client meta-data file is present"
       ansible.builtin.template:
-        src: "{{ item.os_type }}/meta_data.json.j2"
-        dest: "{{ lpar_seed_files }}/{{ item.hostname }}/openstack/latest/meta_data.json"
+        src: "{{ lpar_instance.os_type }}/meta_data.json.j2"
+        dest: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}/openstack/latest/meta_data.json"
         mode: '0644'
 
     - name: "Ensure client user-config file is present"
       ansible.builtin.template:
-        src: "{{ item.os_type }}/user_data.j2"
-        dest: "{{ lpar_seed_files }}/{{ item.hostname }}/openstack/latest/user_data"
+        src: "{{ lpar_instance.os_type }}/user_data.j2"
+        dest: "{{ lpar_seed_files }}/{{ lpar_instance.hostname }}/openstack/latest/user_data"
         mode: '0644'

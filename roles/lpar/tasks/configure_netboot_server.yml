@@ -9,16 +9,16 @@
 
 - name: "Ensure necessary services are started and enabled on netboot server"
   ansible.builtin.systemd:
-    name: "{{ inner_item }}"
+    name: "{{ lpar_netboot_service }}"
     state: started
     enabled: true
   loop: "{{ lpar_netboot_services }}"
   loop_control:
-    loop_var: inner_item
+    loop_var: lpar_netboot_service
 
-- name: "Ensure necessary directories exist"
+- name: "Ensure necessary directories exist on netboot server"
   ansible.builtin.file:
-    path: "{{ inner_item }}"
+    path: "{{ lpar_netboot_directory }}"
     state: directory
     mode: '0755'
   loop:
@@ -27,7 +27,7 @@
     - "{{ lpar_seed_files }}"
     - "{{ lpar_kickstart_files }}"
   loop_control:
-    loop_var: inner_item
+    loop_var: lpar_netboot_directory
 
 - name: "Ensure Debian 13 cloud image is downloaded"
   ansible.builtin.get_url:
