@@ -6,8 +6,8 @@
     hmc_auth:
       username: "{{ ansible_user }}"
       password: "{{ ansible_password }}"
-    system_name: "{{ item.system_name }}"
-    name: "{{ item.name }}"
+    system_name: "{{ vios_instance.system_name }}"
+    name: "{{ vios_instance.name }}"
     state: "facts"
   register: vios_check
 
@@ -21,9 +21,9 @@
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        system_name: "{{ item.system_name }}"
-        name: "{{ item.name }}"
-        settings: "{{ item.settings }}"
+        system_name: "{{ vios_instance.system_name }}"
+        name: "{{ vios_instance.name }}"
+        settings: "{{ vios_instance.settings }}"
         state: "present"
 
     - name: "Get MAC address of first network adapter found"
@@ -32,7 +32,7 @@
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        cmd: 'lpar_netboot -M -n -t ent "{{ item.name }}" "{{ item.settings.profile_name }}" "{{ item.system_name }}"'
+        cmd: 'lpar_netboot -M -n -t ent "{{ vios_instance.name }}" "{{ vios_instance.settings.profile_name }}" "{{ vios_instance.system_name }}"'
       register: vios_hmc_command
 
     - name: "Ensure MAC address is set as fact"
@@ -46,14 +46,14 @@
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        system_name: "{{ item.system_name }}"
-        name: "{{ item.name }}"
-        prof_name: "{{ item.settings.profile_name }}"
-        image_dir: "{{ item.image_dir }}"
-        vios_iso: "{{ item.vios_iso }}"
-        vios_IP: "{{ item.vios_ip }}"
-        vios_gateway: "{{ item.vios_gateway }}"
-        vios_subnetmask: "{{ item.vios_subnetmask }}"
+        system_name: "{{ vios_instance.system_name }}"
+        name: "{{ vios_instance.name }}"
+        prof_name: "{{ vios_instance.settings.profile_name }}"
+        image_dir: "{{ vios_instance.image_dir }}"
+        vios_iso: "{{ vios_instance.vios_iso }}"
+        vios_IP: "{{ vios_instance.vios_ip }}"
+        vios_gateway: "{{ vios_instance.vios_gateway }}"
+        vios_subnetmask: "{{ vios_instance.vios_subnetmask }}"
         network_macaddr: "{{ vios_network_macaddr }}"
         action: install
 
@@ -63,6 +63,6 @@
         hmc_auth:
           username: "{{ ansible_user }}"
           password: "{{ ansible_password }}"
-        system_name: "{{ item.system_name }}"
-        name: "{{ item.name }}"
+        system_name: "{{ vios_instance.system_name }}"
+        name: "{{ vios_instance.name }}"
         action: accept_license

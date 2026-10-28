@@ -2,3 +2,5 @@
 - name: "Run VIOS logical partitions installations sequentially"
   ansible.builtin.include_tasks: install_vios.yml
   loop: "{{ vios_instances }}"
+  loop_control:
+    loop_var: vios_instance
