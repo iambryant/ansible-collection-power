@@ -133,8 +133,8 @@
       ansible.builtin.wait_for:
         host: "{{ lpar_instance.hostname }}.{{ lpar_instance.domain }}"
         port: 22
-        timeout: 300
-        delay: 10
+        timeout: 600
+        delay: 30
       delegate_to: localhost
 
     - name: "Ensure logical partition host keys are added to known_hosts"
