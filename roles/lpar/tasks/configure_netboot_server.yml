@@ -73,7 +73,7 @@
     mode: '0755'
 
 - name: "Ensure base grub configuration is present"
-  ansible.builtin.file:
+  ansible.builtin.copy:
     src: grub_conf_base
     dest: "{{ lpar_tftp_root }}/boot/grub/grub.cfg"
     mode: '0644'
