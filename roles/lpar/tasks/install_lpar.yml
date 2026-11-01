@@ -176,7 +176,7 @@
       delegate_to: "{{ groups['netboot'][0] }}"
       become: true
       ansible.builtin.systemd:
-        name: dhcpd
+        name: "{{ lpar_dhcp_service }}"
         state: restarted
       when: lpar_dhcp_cleanup['changed']
 
