@@ -129,7 +129,7 @@
           "default_profile"
           "{{ lpar_instance.system_name }}"
 
-    - name: "Wait for LPAR SSH port to become active"
+    - name: "Wait for logical partition SSH port to become active"
       ansible.builtin.wait_for:
         host: "{{ lpar_instance.hostname }}.{{ lpar_instance.domain }}"
         port: 22
