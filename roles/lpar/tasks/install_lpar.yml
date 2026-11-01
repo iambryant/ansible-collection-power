@@ -42,6 +42,7 @@
             - lpar_mac_address is not defined or lpar_mac_address | length == 0
 
     - name: "Get MAC address for full-system LPAR"
+      when: (lpar_instance.lpar_type | default('virtual')) == 'full_system'
       block:
         - name: "Run lpar_netboot command to get hardware MAC address"
           connection: local
@@ -50,13 +51,21 @@
             hmc_auth:
               username: "{{ ansible_user }}"
               password: "{{ ansible_password }}"
-            cmd: 'lpar_netboot -M -n -t ent "{{ lpar_instance.vm_name }}" default_profile "{{ lpar_instance.system_name }}"'
+            cmd: >-
+              lpar_netboot -M -n -t ent
+              "{{ lpar_instance.vm_name }}"
+              default_profile
+              "{{ lpar_instance.system_name }}"
           register: lpar_hmc_command
 
         - name: "Get MAC address from command output"
           ansible.builtin.set_fact:
-            lpar_mac_address: "{{ lpar_hmc_command.command_output | regex_findall('ent\\s+\\S+\\s+([0-9a-fA-F]{12})') | first }}"
-      when: (lpar_instance.lpar_type | default('virtual')) == 'full_system'
+            lpar_mac_address: >-
+              {{
+                lpar_hmc_command.command_output
+                | regex_findall('ent\\s+\\S+\\s+([0-9a-fA-F]{12})')
+                | first
+              }}
 
     - name: "Convert MAC address formats"
       ansible.builtin.set_fact:
