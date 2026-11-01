@@ -129,6 +129,14 @@
           "default_profile"
           "{{ lpar_instance.system_name }}"
 
+    - name: "Wait for LPAR SSH port to become active"
+      ansible.builtin.wait_for:
+        host: "{{ lpar_instance.hostname }}.{{ lpar_instance.domain }}"
+        port: 22
+        timeout: 300
+        delay: 10
+      delegate_to: localhost
+
     - name: "Ensure logical partition host keys are added to known_hosts"
       ansible.builtin.known_hosts:
         name: "{{ lpar_instance.hostname }}.{{ lpar_instance.domain }}"
@@ -138,7 +146,7 @@
              + lpar_instance.hostname + '.' + lpar_instance.domain
              + ' | grep ssh-ed25519') }}
         state: present
-      delegate_to: "localhost"
+      delegate_to: localhost
 
     - name: "Ensure facts are gathered from logical partition"
       ansible.builtin.setup:
